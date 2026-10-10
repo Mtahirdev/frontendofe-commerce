@@ -8,17 +8,17 @@ const PersonalInformation = ({ toggleFun }) => {
   let dataA = [
     { value: user.username || "", heading: "Full Name" },
     { value: user.email || "", heading: "Email" },
-    { value: user.userdata.profile.number || "", heading: "Phone Number" },
+    { value: user.userdata?.profile.number || "", heading: "Phone Number" },
     {
-      value: user.userdata.profile.dateofbirth || "",
+      value: user.userdata?.profile.dateofbirth || "",
       heading: "Date of Birth",
     },
   ];
   let dataB = [
-    { value: user.userdata.profile.gender || "", heading: "Gender" },
-    { value: user.userdata.profile.country || "", heading: "Country" },
-    { value: user.userdata.profile.state || "", heading: "State/Province" },
-    { value: user.userdata.profile.city || "", heading: "City" },
+    { value: user.userdata?.profile.gender || "", heading: "Gender" },
+    { value: user.userdata?.profile.country || "", heading: "Country" },
+    { value: user.userdata?.profile.state || "", heading: "State/Province" },
+    { value: user.userdata?.profile.city || "", heading: "City" },
   ];
   return (
     <>

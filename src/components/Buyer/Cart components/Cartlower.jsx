@@ -10,7 +10,13 @@ import { useNavigate } from "react-router-dom";
 const Cartlower = () => {
   let navigate = useNavigate();
   let { cartarr } = useSelector((s) => s.productstore);
+  let value;
   console.log(cartarr);
+
+  if (cartarr.length == 0) {
+    value = 0;
+    return;
+  }
 
   let arr = cartarr.map((ele) => {
     let a = ele.price * (ele.discount / 100);
@@ -19,7 +25,7 @@ const Cartlower = () => {
 
   console.log(arr);
 
-  let value = arr?.reduce((prev, cur, index) => {
+  value = arr?.reduce((prev, cur, index) => {
     return cur + prev;
   });
 
@@ -33,7 +39,7 @@ const Cartlower = () => {
 
   return (
     <>
-      <div className="flex flex-col w-[90%] lg:w-[50%]  h-fit border-1 mt-2 border-gray-400    ">
+      <div className="flex flex-col w-[90%] lg:w-[50%]  h-fit border mt-2 border-gray-400    ">
         <h1 className="text-2xl ml-3 font-bold">Order Summary</h1>
         <div className="flex w-full gap-28 ml-3 mt-2">
           <h1 className="font-bold">

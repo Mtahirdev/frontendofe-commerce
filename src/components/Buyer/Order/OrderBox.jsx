@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../../../assets/logo.png";
-import ReviewForm from "./ReviewForm";
+import ReviewForm from "./ReviewForm.jsx";
 
 const OrderBox = ({ ele }) => {
   let [review, setreview] = useState(false);
@@ -33,7 +33,7 @@ const OrderBox = ({ ele }) => {
             return (
               <>
                 <div className="flex flex-col gap-4  w-full h-fit border-t border-[#E2E8F0] pt-2 pb-2">
-                  <div className="flex w-full flex-col lg:flex-row lg:justify-evenly lg:w-130  items-center gap-3">
+                  <div className="flex w-full h-fit flex-col lg:flex-row lg:justify-evenly lg:w-130  items-center gap-3">
                     <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-[#F8FAFC] p-2 sm:h-24 sm:w-24">
                       <img
                         src={ele.mainimg}
@@ -41,7 +41,7 @@ const OrderBox = ({ ele }) => {
                         className="h-full w-full object-contain"
                       />
                     </div>
-                    <div className="min-w-0">
+                    <div className="">
                       <h3 className="line-clamp-2 text-sm font-semibold text-[#0B1730] sm:text-base">
                         {ele.productName}
                       </h3>

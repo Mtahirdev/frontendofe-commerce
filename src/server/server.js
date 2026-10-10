@@ -89,6 +89,8 @@ export let GetmeFetch = async (params) => {
   return res;
 };
 
+// set logout function
+
 const apiFetch = async (api, option) => {
   try {
     let currentState = store.getState();
@@ -285,6 +287,18 @@ export let PlaceOrder = async (formdata, token) => {
     },
     credentials: "include",
     body: JSON.stringify(formdata),
+  });
+
+  return res;
+};
+
+export let Logout = async (token) => {
+  let res = await apiFetch(`http://localhost:3000/auth/logout`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
   });
 
   return res;

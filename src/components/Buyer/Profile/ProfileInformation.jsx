@@ -6,9 +6,21 @@ import PersonalInformation from "./PersonalInformation.jsx";
 import AddressesInformation from "./AddressesInformation.jsx";
 import PersonalInformationEdit from "./PersonalInformationEdit.jsx";
 import AddressForm from "./AddressForm.jsx";
+import { Logout } from "../../../server/server.js";
+import { useNavigate } from "react-router-dom";
 
 const ProfileInformation = () => {
   let [toggle, settoggle] = useState("information");
+  let navigate = useNavigate();
+
+  let { token } = useSelector((s) => s.userstore);
+
+  let LogoutFun = async (e) => {
+    Logout(token).then((res) => {
+      alert("Logout successfully");
+      navigate("/auth");
+    });
+  };
 
   let toggleFun = (state) => {
     settoggle(state);
@@ -55,6 +67,12 @@ const ProfileInformation = () => {
           )}
           {toggle == "add address" ? <AddressForm toggleFun={toggleFun} /> : ""}
         </div>
+        <button
+          onClick={LogoutFun}
+          className="bg-red-500 rounded-2xl px-7 py-2 text-white hover:bg-red-400"
+        >
+          Logout
+        </button>
       </div>
     </>
   );

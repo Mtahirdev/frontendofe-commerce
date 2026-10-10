@@ -48,7 +48,7 @@ const Cartupper = () => {
       <div className="flex flex-col pb-5 items-center justify-center">
         <div className="flex flex-col justify-center items-center text-center w-full h-[80%]">
           <div className="w-[90%] h-fit  scrollbar-none place-items-center grid grid-cols-1 grid-rows-1 gap-2 lg:gap-3 pb-10  pr-3 pl-3 overflow-scroll">
-            {cartarr.map((ele, index) => {
+            {cartarr?.map((ele, index) => {
               return <CartProduct key={ele._id} product={ele} />;
             })}
           </div>
