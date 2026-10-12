@@ -27,7 +27,7 @@ const OrderBox = ({ ele }) => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 place-items-center w-full h-fit">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-3 place-items-center w-full h-fit">
           {ele.items.map((ele) => {
             let active = ele.state == "delivered";
             return (

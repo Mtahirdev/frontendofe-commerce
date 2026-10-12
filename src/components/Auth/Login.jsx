@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { LoginFetch } from "../../server/server";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setOrderData,
   setToken,
   setType,
   setUserData,
@@ -56,6 +57,7 @@ const Login = () => {
         dispatch(setType(res.data.type));
         dispatch(setVerified(res.data.verified));
         dispatch(setUserData(res.user));
+        dispatch(setOrderData(res.order));
         setTimeout(() => {
           navigate(`/${res.data.type}`);
         }, 4000);

@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 const OrderGrid = () => {
   let { order } = useSelector((s) => s.userstore);
-  console.log(order);
 
   return (
     <>

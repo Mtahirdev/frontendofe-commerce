@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import {
+  setOrderData,
   setToken,
   setType,
   setUserData,
@@ -32,6 +33,7 @@ const AppInitializer = () => {
           dispatch(setType(res.user.type));
           dispatch(setVerified(res.user.verified));
           dispatch(setUserData(res.user));
+          dispatch(setOrderData(res.order));
           setTimeout(() => {
             navigate(`/${res.user.type}`);
           }, 500);

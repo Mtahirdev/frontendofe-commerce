@@ -303,3 +303,15 @@ export let Logout = async (token) => {
 
   return res;
 };
+
+export let FetchSellerOrder = async (token) => {
+  let res = await apiFetch(`http://localhost:3000/admin/fetchorder`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+
+  return res;
+};
