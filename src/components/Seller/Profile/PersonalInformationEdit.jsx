@@ -2,82 +2,49 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, useNavigate } from "react-router-dom";
 import { EditProfile } from "../../../server/server";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { setUserData } from "../../../store/feature/UserData";
 
 const PersonalInformationEdit = ({ toggleFun }) => {
-  let navigate = useNavigate();
-  let [loading, setloading] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setloading] = useState(false);
   const dispatch = useDispatch();
-  let { user, token } = useSelector((state) => state.userstore);
-  let dataA = [
+  const { user, token } = useSelector((state) => state.userstore);
+  const p = user.userdata.profile;
+
+  const fields = [
+    { value: user.username || "", heading: "Full Name", name: "username" },
+    { value: user.email || "", heading: "Email", name: "email" },
+    { value: p.number || "", heading: "Phone Number", name: "number" },
     {
-      value: user.username || "",
-      heading: "Full Name",
-      nameoffield: "username",
-    },
-    { value: user.email || "", heading: "Email", nameoffield: "email" },
-    {
-      value: user.userdata.profile.number || "",
-      heading: "Phone Number",
-      nameoffield: "number",
-    },
-    {
-      value: user.userdata.profile.dateofbirth || "",
+      value: p.dateofbirth || "",
       heading: "Date of Birth",
-      nameoffield: "dateofbirth",
+      name: "dateofbirth",
     },
+    { value: p.gender || "", heading: "Gender", name: "gender" },
+    { value: p.country || "", heading: "Country", name: "country" },
+    { value: p.state || "", heading: "State/Province", name: "state" },
+    { value: p.city || "", heading: "City", name: "city" },
   ];
-  let dataB = [
-    {
-      value: user.userdata.profile.gender || "",
-      heading: "Gender",
-      nameoffield: "gender",
-    },
-    {
-      value: user.userdata.profile.country || "",
-      heading: "Country",
-      nameoffield: "country",
-    },
-    {
-      value: user.userdata.profile.state || "",
-      heading: "State/Province",
-      nameoffield: "state",
-    },
-    {
-      value: user.userdata.profile.city || "",
-      heading: "City",
-      nameoffield: "city",
-    },
-  ];
-  let SubmitFun = async (e) => {
-    toggleFun("information");
+
+  const SubmitFun = async (e) => {
+    e.preventDefault();
     setloading(true);
-    let formdata = Object.fromEntries(new FormData(e.target));
-    console.log(formdata);
-    let res = await EditProfile(formdata, token);
-    console.log(res);
+    const formdata = Object.fromEntries(new FormData(e.target));
 
     try {
+      const res = await EditProfile(formdata, token);
+
       if (res.msg_login) {
         setloading(false);
-
         toast.error("please login");
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 3000);
+        setTimeout(() => navigate("/auth/login"), 3000);
       } else if (res.msg_signup) {
         setloading(false);
-
         toast.error("please signup");
-        setTimeout(() => {
-          navigate("/auth/signup");
-        }, 3000);
+        setTimeout(() => navigate("/auth/signup"), 3000);
       } else if (res.msgerr) {
         setloading(false);
-
         toast.error("please try again later");
       } else if (res.msg_validation) {
         setloading(false);
@@ -86,9 +53,7 @@ const PersonalInformationEdit = ({ toggleFun }) => {
         setloading(false);
         toast.success("Profile update successfully");
         dispatch(setUserData(res.user));
-        setTimeout(() => {
-          navigate(`/${res.user.type}/profile`);
-        }, 3000);
+        toggleFun("information");
       } else {
         setloading(false);
         toast.error("some error occur");
@@ -99,57 +64,55 @@ const PersonalInformationEdit = ({ toggleFun }) => {
       toast.error("please try again later");
     }
   };
+
   return (
     <>
-      <div className="w-[90%] mt-3 shadow-2xl shadow-gray-400 mb-6 pt-3 pb-3">
-        <h1 className="font-bold text-2xl sm:ml-6 sm:mb-3 ml-2">
-          Please Edit Your Profile
+      {loading && (
+        <div className="fixed z-50 inset-0 bg-ink-900/50 flex justify-center items-center">
+          <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
+        </div>
+      )}
+
+      <div className="w-[95%] max-w-3xl mx-auto bg-white border border-ink-200 rounded-2xl shadow-sm p-5 mb-4">
+        <h1 className="font-bold text-2xl text-ink-800 mb-4">
+          Edit your profile
         </h1>
+
         <Form onSubmit={SubmitFun}>
-          <div className="lg:flex lg:justify-evenly lg:w-full">
-            <div className="lg:w-[35%]">
-              {dataA.map((ele, index) => {
-                return (
-                  <div
-                    className="flex flex-col ml-3 gap-1 mt-1 w-full"
-                    key={index}
-                  >
-                    <label htmlFor="">{ele.heading}</label>
-                    <input
-                      type="text"
-                      defaultValue={ele.value}
-                      name={ele.nameoffield}
-                      className="border border-gray-200 rounded-2xl w-[80%] pt-1 pb-1 pr-1 pl-1 "
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <div className="lg:w-[35%]">
-              {dataB.map((ele, index) => {
-                return (
-                  <div
-                    className="flex flex-col ml-3 gap-1 mt-1 w-full"
-                    key={index}
-                  >
-                    <label htmlFor="">{ele.heading}</label>
-                    <input
-                      type="text"
-                      defaultValue={ele.value}
-                      name={ele.nameoffield}
-                      className="border border-gray-200 rounded-2xl w-[80%] pt-1 pb-1 pr-1 pl-1  "
-                    />
-                  </div>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {fields.map((ele) => (
+              <div key={ele.name} className="flex flex-col gap-1">
+                <label
+                  htmlFor={ele.name}
+                  className="text-sm font-medium text-ink-500"
+                >
+                  {ele.heading}
+                </label>
+                <input
+                  id={ele.name}
+                  type="text"
+                  defaultValue={ele.value}
+                  name={ele.name}
+                  className="w-full px-4 py-2.5 bg-white border border-ink-200 rounded-xl text-ink-800 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                />
+              </div>
+            ))}
           </div>
-          <div className="w-full flex justify-center mt-3">
+
+          <div className="w-full flex justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => toggleFun("information")}
+              className="rounded-xl border border-ink-200 text-ink-700 hover:bg-ink-50 font-semibold px-6 py-2 transition-colors"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              className="border-2 border-gray-200 rounded-2xl pb-1 pt-1 pl-2 pr-2"
+              disabled={loading}
+              className="rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold px-6 py-2 transition-colors"
             >
-              Submit
+              Save changes
             </button>
           </div>
         </Form>

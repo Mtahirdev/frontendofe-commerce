@@ -2,51 +2,50 @@ import React, { useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaFilter } from "react-icons/fa";
 import Sortbypopularity from "./Sortbypopularity";
+
 const CateHeading = ({ setcategoryOpen }) => {
-  let [sortOpen, setsortOpen] = useState(false);
-  let [sortValue, setsortValue] = useState("Popularity");
+  const [sortOpen, setsortOpen] = useState(false);
+  const [sortValue, setsortValue] = useState("Popularity");
+
   return (
-    <>
-      <div className="flex flex-col justify-center w-full ">
-        <div className="flex flex-col grow gap-1">
-          <h1 className="font-bold text-2xl ml-3">Men</h1>
-          <p className="font-bold ml-3 md:text-2xl">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa,
-            iste.
-          </p>
-        </div>
-        <div
-          className="flex w-[99%] justify-evenly grow mt-2"
-          onClick={() => {
-            setsortOpen(!sortOpen);
-          }}
-        >
-          <div className="border-1 rounded-2xl pl-1 pr-1 flex items-center justify-center w-[70%] lg:w-[30%] md:w-[40%]">
-            <p className="w-[70%] active:border-0 capitalize">
-              Sort by: {sortValue}
-            </p>
-            <IoMdArrowDropdown className="text-2xl" />
-          </div>
-          <button
-            onClick={() => {
-              setcategoryOpen(true);
-            }}
-            className="border-1 pl-3 pr-3 pt-1 pb-1 rounded-2xl flex justify-center items-center gap-1"
-          >
-            filter
-            <FaFilter />
-          </button>
-        </div>
-        {sortOpen == true ? (
-          <Sortbypopularity
-            setsortValue={setsortValue}
-            setsortOpen={setsortOpen}
-          />
-        ) : (
-          <div></div>
-        )}
+    <div className="flex flex-col w-[95%] mx-auto mt-4">
+      <div className="flex flex-col gap-1">
+        <h1 className="font-bold text-2xl text-ink-800">Men</h1>
+        <p className="text-ink-500 md:text-lg">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa, iste.
+        </p>
       </div>
-    </>
+
+      <div className="flex gap-3 mt-4">
+        <button
+          type="button"
+          onClick={() => setsortOpen(!sortOpen)}
+          className="flex flex-1 items-center justify-between rounded-xl border border-ink-200 bg-white px-4 py-2.5 text-ink-700 hover:border-brand-300 transition md:max-w-xs"
+        >
+          <span className="capitalize">Sort by: {sortValue}</span>
+          <IoMdArrowDropdown
+            className={`text-2xl transition-transform ${sortOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setcategoryOpen(true)}
+          className="flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 transition-colors"
+        >
+          Filter
+          <FaFilter />
+        </button>
+      </div>
+
+      {sortOpen && (
+        <Sortbypopularity
+          sortValue={sortValue}
+          setsortValue={setsortValue}
+          setsortOpen={setsortOpen}
+        />
+      )}
+    </div>
   );
 };
 

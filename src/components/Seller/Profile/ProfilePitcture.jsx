@@ -3,44 +3,39 @@ import { FaCameraRotate } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, useNavigate } from "react-router-dom";
 import { SetProfilePitcture } from "../../../server/server.js";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { setUserData } from "../../../store/feature/UserData";
+
 const ProfilePitcture = () => {
-  let { user, token } = useSelector((s) => s.userstore);
-  let dispatch = useDispatch();
-  let navigate = useNavigate();
-  console.log(user.userdata.profile);
-  let [loading, setloading] = useState(false);
+  const { user, token } = useSelector((s) => s.userstore);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loading, setloading] = useState(false);
+  const [img, setimg] = useState(user.userdata.profile.img || "");
+  const [picked, setpicked] = useState(false);
 
-  let [img, setimg] = useState(user.userdata.profile.img || "");
-  let SetImage = (e) => {
-    let a = e.target.files[0];
-    a = URL.createObjectURL(a);
-    setimg(a);
+  const SetImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setimg(URL.createObjectURL(file));
+    setpicked(true);
   };
-  let SubmitFun = async (e) => {
+
+  const SubmitFun = async (e) => {
+    e.preventDefault();
     setloading(true);
-    let formdata = new FormData(e.target);
-    console.log(formdata);
-    let res = await SetProfilePitcture(formdata, token);
-
-    console.log(res);
-
     try {
+      const formdata = new FormData(e.target);
+      const res = await SetProfilePitcture(formdata, token);
+
       if (res.msg_login) {
         setloading(false);
         toast.error("please login");
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 3000);
+        setTimeout(() => navigate("/auth/login"), 3000);
       } else if (res.msg_signup) {
         setloading(false);
         toast.error("please signup");
-        setTimeout(() => {
-          navigate("/auth/signup");
-        }, 3000);
+        setTimeout(() => navigate("/auth/signup"), 3000);
       } else if (res.msgerr) {
         setloading(false);
         toast.error("please try again later");
@@ -49,10 +44,12 @@ const ProfilePitcture = () => {
         toast.error("image is not found");
       } else if (res.msg_success) {
         setloading(false);
+        setpicked(false);
+        toast.success("profile picture updated");
         dispatch(setUserData(res.user));
-        setTimeout(() => {
-          navigate(`/${res.user.type}/profile`);
-        }, 3000);
+      } else {
+        setloading(false);
+        toast.error("please try again later");
       }
     } catch (error) {
       setloading(false);
@@ -60,61 +57,62 @@ const ProfilePitcture = () => {
       toast.error("please try again later");
     }
   };
+
   return (
     <>
       {loading && (
-        <>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-blue-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-green-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </>
+        <div className="fixed z-50 inset-0 bg-ink-900/50 flex justify-center items-center">
+          <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
+        </div>
       )}
-      {/* main div */}
-      <ToastContainer autoClose={3000} />
-      <Form onSubmit={SubmitFun}>
-        <div className="flex flex-col w-full  ">
-          <div className="flex flex-col w-full sm:w-[50%] md:w-[50%] lg:w-[30%]  rounded-2xl  text-center justify-center sm:flex-row sm:gap-30 md:gap-40 sm:mx-auto sm:mt-5 mr-5 sm:pb-5   ">
-            {/* pitcture div */}
-            <div className="relative items-center justify-center text-center">
+
+      <Form onSubmit={SubmitFun} className="w-[95%] max-w-3xl mx-auto">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-white border border-ink-200 shadow-sm p-6 text-center sm:flex-row sm:text-left sm:gap-8">
+          {/* picture */}
+          <div className="relative shrink-0">
+            {img ? (
               <img
                 src={img}
-                alt=""
-                className="rounded-full w-60  aspect-square  md:w-46 md:h-46  border-2 border-gray-300  mt-3 "
+                alt="profile"
+                className="rounded-full w-36 h-36 md:w-44 md:h-44 object-cover bg-ink-100 border-4 border-brand-100"
               />
-              <button
-                type="button"
-                className="absolute left-[58%] mobile:left-[55%] sm:left-[95%] text-2xl bottom-0.5"
-              >
-                <input
-                  type="file"
-                  id="file"
-                  name="img"
-                  className="hidden"
-                  onChange={(e) => {
-                    SetImage(e);
-                  }}
-                />
-                <label htmlFor="file">
-                  <FaCameraRotate />
-                </label>
-              </button>
-            </div>
-            {/* content div */}
+            ) : (
+              <div className="flex items-center justify-center rounded-full w-36 h-36 md:w-44 md:h-44 bg-brand-50 border-4 border-brand-100 text-5xl font-bold text-brand-600 uppercase">
+                {user.username?.charAt(0)}
+              </div>
+            )}
+            <input
+              type="file"
+              id="file"
+              name="img"
+              accept="image/*"
+              className="hidden"
+              onChange={SetImage}
+            />
+            <label
+              htmlFor="file"
+              className="absolute bottom-1 right-1 flex items-center justify-center w-10 h-10 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-lg cursor-pointer shadow-md transition-colors"
+            >
+              <FaCameraRotate />
+            </label>
           </div>
-          {/* edit button div */}
-          <div className="w-full justify-center flex mt-2 sm:mt-8">
+
+          {/* details + save */}
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <h2 className="font-bold text-xl sm:text-2xl text-ink-800">
+              {user.username}
+            </h2>
+            <span className="inline-block w-fit rounded-full bg-brand-50 text-brand-600 px-3 py-0.5 text-sm font-semibold capitalize">
+              {user.type}
+            </span>
+            <p className="text-ink-500">{user.email}</p>
+
             <button
               type="submit"
-              className="font-bold  pl-2 pr-2 pt-1 pb-1 border-2 rounded-2xl"
+              disabled={!picked}
+              className="mt-2 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-6 py-2 transition-colors"
             >
-              Edit Profile
+              Save Photo
             </button>
           </div>
         </div>

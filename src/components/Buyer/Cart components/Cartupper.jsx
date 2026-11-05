@@ -36,50 +36,56 @@ const Cartupper = () => {
     });
   }, []);
   return (
-    <div className="w-full  mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold ml-[5%]">
-          Your Cart <span>(45)</span>
+    <div className="w-full mx-auto">
+      <div className="mt-4">
+        <h1 className="text-2xl font-bold ml-[5%] text-ink-800">
+          Your Cart <span className="text-brand-600">({cartarr.length})</span>
         </h1>
-        <p className="ml-[5%] font-bold">
-          Review you item and process to checkout
+        <p className="ml-[5%] text-ink-500">
+          Review your items and proceed to checkout
         </p>
       </div>
+
       <div className="flex flex-col pb-5 items-center justify-center">
-        <div className="flex flex-col justify-center items-center text-center w-full h-[80%]">
-          <div className="w-[90%] h-fit  scrollbar-none place-items-center grid grid-cols-1 grid-rows-1 gap-2 lg:gap-3 pb-10  pr-3 pl-3 overflow-scroll">
-            {cartarr?.map((ele, index) => {
-              return <CartProduct key={ele._id} product={ele} />;
-            })}
+        <div className="flex flex-col justify-center items-center text-center w-full">
+          <div className="w-[90%] h-fit scrollbar-none place-items-center grid grid-cols-1 gap-3 py-4 px-3">
+            {cartarr?.map((ele) => (
+              <CartProduct key={ele._id} product={ele} />
+            ))}
           </div>
         </div>
-        <div className="w-full h-full flex flex-col  ">
-          <div className="flex w-[90%]  border border-gray-400 gap-2 mt-5 mx-auto items-center flex-col pb-5 mb-5 sm:w-[80%] md:w-[90%] lg:w-[50%]">
-            <div className="flex items-center">
-              <div className="">
+
+        {/* Coupon box */}
+        <div className="w-full flex flex-col">
+          <div className="flex w-[90%] bg-white border border-ink-200 rounded-2xl shadow-sm gap-2 mt-2 mx-auto items-center flex-col p-5 mb-5 sm:w-[80%] md:w-[90%] lg:w-[50%]">
+            <div className="flex items-center gap-3 w-full">
+              <div className="p-2.5 rounded-full bg-brand-50 text-brand-600">
                 <MdOutlineDiscount className="text-2xl" />
               </div>
-              <div className=" w-[90%]">
-                <h1 className="font-bold capitalize">have a coupen code?</h1>
-                <p className="font-bold capitalize">
-                  apply it for extara saving
+              <div className="text-left">
+                <h1 className="font-bold capitalize text-ink-800">
+                  have a coupon code?
+                </h1>
+                <p className="text-sm text-ink-500 capitalize">
+                  apply it for extra savings
                 </p>
               </div>
             </div>
-            <Form className="flex justify-evenly w-full mt-2">
+            <Form className="flex gap-2 w-full mt-2">
               <input
                 type="text"
                 name="coupen"
                 id="coupen"
-                className="w-[45vw] lg:w-[25vw]"
+                className="flex-1 min-w-0 px-3 py-2 bg-ink-50 border border-ink-200 rounded-xl text-ink-800 placeholder:text-ink-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                 placeholder="Enter coupon code"
               />
-              <button className="bg-purple-500 text-white pt-1 pb-1 pl-2 pr-2 rounded-2xl sm:pl-4 sm:pr-4">
+              <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2 rounded-xl transition-colors">
                 Apply
               </button>
             </Form>
           </div>
         </div>
+
         <Cartlower />
       </div>
     </div>

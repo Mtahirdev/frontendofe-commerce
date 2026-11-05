@@ -5,14 +5,24 @@ import OrderGrid from "../../components/Seller/Order/OrderGrid.jsx";
 
 const OrderPage = () => {
   return (
-    <div className="lg:flex lg:w-full lg:h-full flex flex-col lg:flex-row lg:justify-center bg-[#F1F5F9] ">
+    <div className="flex flex-col lg:flex-row lg:justify-center bg-ink-100 min-h-screen text-ink-800">
       <div className="w-full lg:w-[30%] desk:w-[22%]">
-        <Navbar></Navbar>
+        <Navbar />
       </div>
-      <div className="w-full lg:w-[70%] desk:w-[78%] flex flex-col  justify-center items-center h-fit bg-[#F1F5F9] lg:h-fit gap-4 pt-5">
-        <h1 className="text-3xl text-[#0B1730]">Order</h1>
-        <SearchBar></SearchBar>
-        <OrderGrid></OrderGrid>
+
+      <div className="w-full lg:w-[70%] desk:w-[78%] flex flex-col items-center gap-4 px-4 pt-5 pb-10">
+        <div className="w-[95%]">
+          <h1 className="text-2xl sm:text-3xl font-bold text-ink-800">
+            Orders
+          </h1>
+          <p className="text-sm text-ink-500">
+            Orders placed by customers for your products
+          </p>
+        </div>
+        <SearchBar />
+        <div className="w-[95%]">
+          <OrderGrid />
+        </div>
       </div>
     </div>
   );

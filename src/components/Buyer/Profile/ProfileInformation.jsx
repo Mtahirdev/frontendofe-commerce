@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { FaAddressBook } from "react-icons/fa6";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import PersonalInformation from "./PersonalInformation.jsx";
 import AddressesInformation from "./AddressesInformation.jsx";
 import PersonalInformationEdit from "./PersonalInformationEdit.jsx";
@@ -10,66 +10,67 @@ import { Logout } from "../../../server/server.js";
 import { useNavigate } from "react-router-dom";
 
 const ProfileInformation = () => {
-  let [toggle, settoggle] = useState("information");
-  let navigate = useNavigate();
+  const [toggle, settoggle] = useState("information");
+  const navigate = useNavigate();
+  const { token } = useSelector((s) => s.userstore);
 
-  let { token } = useSelector((s) => s.userstore);
-
-  let LogoutFun = async (e) => {
-    Logout(token).then((res) => {
+  const LogoutFun = async () => {
+    Logout(token).then(() => {
       alert("Logout successfully");
       navigate("/auth");
     });
   };
 
-  let toggleFun = (state) => {
-    settoggle(state);
-  };
+  const toggleFun = (state) => settoggle(state);
+
+  const infoActive = toggle === "information" || toggle === "edit information";
+  const addrActive = toggle === "addresses" || toggle === "add address";
+
+  const tabClass = (active) =>
+    `flex flex-1 flex-col items-center gap-1 py-3 border-b-2 transition-colors ${
+      active
+        ? "border-brand-600 text-brand-600 font-semibold"
+        : "border-transparent text-ink-500 hover:bg-ink-50 hover:text-brand-600"
+    }`;
+
   return (
     <>
-      <div className="w-screen flex  justify-center">
-        <div className="w-[95%] h-fit shadow-2xl shadow-gray-300 mt-4 pb-4 flex flex-col justify-center mb-6 pt-5 ">
-          <div className="flex justify-evenly   ">
-            <div
-              onClick={() => toggleFun("information")}
-              className={`flex flex-col items-center hover:bg-gray-200 pb-2 pt-2 pl-1 pr-1 ${toggle == "information" ? "border-b-2" : ""}`}
-            >
-              <CgProfile className="text-2xl" />
-              <p>Persoanl information</p>
-            </div>
-            <div
-              onClick={() => toggleFun("addresses")}
-              className={`flex flex-col items-center pb-2 pt-2 pl-1 pr-1 hover:bg-gray-200 ${toggle == "addresses" ? "border-b-2" : ""}`}
-            >
-              <FaAddressBook className="text-2xl" />
-              <p>Addresses</p>
-            </div>
-          </div>
+      {/* tabs */}
+      <div className="w-[95%] lg:w-[90%] mx-auto mt-6 rounded-2xl bg-white border border-ink-200 shadow-sm overflow-hidden">
+        <div className="flex">
+          <button
+            onClick={() => toggleFun("information")}
+            className={tabClass(infoActive)}
+          >
+            <CgProfile className="text-2xl" />
+            <p>Personal information</p>
+          </button>
+          <button
+            onClick={() => toggleFun("addresses")}
+            className={tabClass(addrActive)}
+          >
+            <FaAddressBook className="text-2xl" />
+            <p>Addresses</p>
+          </button>
         </div>
       </div>
-      <div className="flex flex-col items-center w-screen h-full">
-        <div
-          className={`${toggle == "edit information" || toggle == "add address" ? "hidden" : ""} w-full h-full items-center flex flex-col`}
-        >
-          {toggle == "information" ? (
-            <PersonalInformation toggleFun={toggleFun}></PersonalInformation>
-          ) : (
-            <AddressesInformation toggleFun={toggleFun}></AddressesInformation>
-          )}
-        </div>
-        <div
-          className={`${toggle === "edit information" || toggle === "add address" ? "" : ""}  w-full h-full items-center flex-col flex`}
-        >
-          {toggle == "edit information" ? (
-            <PersonalInformationEdit toggleFun={toggleFun} />
-          ) : (
-            ""
-          )}
-          {toggle == "add address" ? <AddressForm toggleFun={toggleFun} /> : ""}
-        </div>
+
+      {/* content */}
+      <div className="flex flex-col items-center w-full mt-4">
+        {toggle === "information" && (
+          <PersonalInformation toggleFun={toggleFun} />
+        )}
+        {toggle === "addresses" && (
+          <AddressesInformation toggleFun={toggleFun} />
+        )}
+        {toggle === "edit information" && (
+          <PersonalInformationEdit toggleFun={toggleFun} />
+        )}
+        {toggle === "add address" && <AddressForm toggleFun={toggleFun} />}
+
         <button
           onClick={LogoutFun}
-          className="bg-red-500 rounded-2xl px-7 py-2 text-white hover:bg-red-400"
+          className="mt-6 mb-6 rounded-xl border-2 border-danger-500 text-danger-600 hover:bg-danger-500 hover:text-white font-semibold px-8 py-2 transition-colors"
         >
           Logout
         </button>

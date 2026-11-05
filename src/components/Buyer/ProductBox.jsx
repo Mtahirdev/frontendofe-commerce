@@ -66,20 +66,24 @@ const ProductBox = () => {
   }, []);
   return (
     <>
-      <div className="mt-3">
-        <h1 className="ml-3 font-extrabold capitalize text-3xl">Produts</h1>
-        <p className="ml-3 font-bold capitalize ">
-          handpick products just for you
+      <div className="mt-6">
+        <h1 className="ml-3 font-extrabold capitalize text-3xl text-ink-800">
+          Products
+        </h1>
+        <p className="ml-3 capitalize text-ink-500">
+          handpicked products just for you
         </p>
-        <div className="grid grid-cols-1 grid-rows-1 w-full justify-items-center pt-3 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {productarr?.map((ele, i) => {
-            return <ProductCard product={ele}></ProductCard>;
-          })}
+        <div className="flex justify-center items-center w-screen ">
+          <div className="grid grid-cols-1  w-[95%]  h-fit    pt-4 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {productarr?.map((ele) => (
+              <ProductCard key={ele._id} product={ele} />
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="w-full flex justify-center items-center mt-3 pb-5">
-        <button className="text-center font-bold border-2 rounded-2xl pl-2 pr-2 mt-2">
+      <div className="w-full flex justify-center items-center mt-4 pb-5">
+        <button className="font-semibold border-2 border-brand-600 text-brand-600 rounded-2xl px-6 py-2 hover:bg-brand-600 hover:text-white transition-colors">
           Show More
         </button>
       </div>

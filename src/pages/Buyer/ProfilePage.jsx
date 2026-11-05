@@ -8,10 +8,13 @@ import ProfileInformation from "../../components/Buyer/Profile/ProfileInformatio
 import SecondFooter from "../../components/Buyer/SecondFooter.jsx";
 import Footer from "../../components/Buyer/Footer.jsx";
 import SideBar from "../../components/Buyer/Navbar components/SideBar.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfilePage = () => {
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       <div>
         <div>
           <div className="overflow-x-hidden">

@@ -6,22 +6,17 @@ import Filter from "./Filter";
 import ProductBox from "../ProductBox";
 
 const CategoryMain = () => {
-  let [categoryOpen, setcategoryOpen] = useState(false);
-  return (
-    <>
-      {categoryOpen == false ? (
-        <div>
-          <CateHeading setcategoryOpen={setcategoryOpen}></CateHeading>
-          <Banner></Banner>
-          <Category></Category>
-          <ProductBox></ProductBox>
-        </div>
-      ) : (
-        <div>
-          <Filter setcategoryOpen={setcategoryOpen}></Filter>
-        </div>
-      )}
-    </>
+  const [categoryOpen, setcategoryOpen] = useState(false);
+
+  return categoryOpen ? (
+    <Filter setcategoryOpen={setcategoryOpen} />
+  ) : (
+    <div>
+      <CateHeading setcategoryOpen={setcategoryOpen} />
+      <Banner />
+      <Category />
+      <ProductBox />
+    </div>
   );
 };
 

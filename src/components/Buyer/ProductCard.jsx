@@ -9,8 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { SetCartArray } from "../../store/feature/ProductsData";
 const ProductCard = ({ product }) => {
-  let lessprice = product.price * (product.discount / 100);
-  lessprice = product.price - lessprice;
+  let lessprice = product.price - product.price * (product.discount / 100);
+  lessprice = Math.round(lessprice);
   console.log(lessprice);
   let { token } = useSelector((state) => state.userstore);
   let dispatch = useDispatch();
@@ -66,59 +66,56 @@ const ProductCard = ({ product }) => {
     }
   };
   return (
-    <>
-      <div className="w-full h-fit">
-        <ToastContainer position="top-right" autoClose={3000} />
-        <div class="w-full max-w-70 overflow-hidden rounded-2xl bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-          <Link to={`productdetail/${product._id}`}>
-            <div class="relative h-64 w-full overflow-hidden bg-gray-100">
-              <img
-                src={product.mainimg}
-                alt="Nike Shoes"
-                class="h-full w-full object-cover transition duration-500 hover:scale-105"
-              />
+    <div className="w-full h-fit  flex flex-col justify-center items-center">
+      <div className="w-full max-w-70 overflow-hidden rounded-2xl bg-white border border-pink-200 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-brand-200">
+        <Link to={`productdetail/${product._id}`}>
+          <div className="relative h-64 w-full overflow-hidden bg-ink-100">
+            <img
+              src={product.mainimg}
+              alt={product.productName}
+              className="h-full w-full object-cover transition duration-500 hover:scale-105"
+            />
 
-              <span class="absolute left-3 top-3 rounded-md bg-red-500 px-2.5 py-1 text-xs font-bold text-white">
-                -{product.discount}%
-              </span>
+            <span className="absolute left-3 top-3 rounded-md bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">
+              -{product.discount}%
+            </span>
 
-              <span class="absolute right-3 top-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-700 shadow">
-                {product.reviews} views
-              </span>
-            </div>
-          </Link>
-
-          <div class="p-4">
-            <h2 class="truncate text-lg font-semibold text-gray-800">
-              {product.productName}
-            </h2>
-
-            <div class="mt-2 flex items-center gap-3 text-sm">
-              <span class="font-semibold text-gray-700">
-                Rating: {product.rating}/5
-              </span>
-
-              <span class="text-gray-500">({product.reviews} reviews)</span>
-            </div>
-
-            <div class="mt-3 flex items-center gap-2">
-              <span class="text-2xl font-bold text-gray-900">{lessprice}</span>
-
-              <span class="text-sm text-gray-400 line-through">
-                {product.price}
-              </span>
-            </div>
-
-            <button
-              onClick={() => AddtoCart(product._id)}
-              class="mt-4 w-full rounded-xl bg-black px-4 py-3 font-semibold text-white transition hover:bg-gray-800 active:scale-95"
-            >
-              Add to Cart
-            </button>
+            <span className="absolute right-3 top-3 rounded-md bg-white/90 px-2.5 py-1 text-xs font-medium text-ink-700 shadow-sm">
+              {product.reviews} views
+            </span>
           </div>
+        </Link>
+
+        <div className="p-4">
+          <h2 className="truncate text-lg font-semibold text-ink-800">
+            {product.productName}
+          </h2>
+
+          <div className="mt-2 flex items-center gap-3 text-sm">
+            <span className="font-semibold text-warning-600">
+              ★ {product.rating}/5
+            </span>
+            <span className="text-ink-400">({product.reviews} reviews)</span>
+          </div>
+
+          <div className="mt-3 flex items-center gap-2">
+            <span className="text-2xl font-bold text-accent-600">
+              {lessprice}
+            </span>
+            <span className="text-sm text-ink-400 line-through">
+              {product.price}
+            </span>
+          </div>
+
+          <button
+            onClick={() => AddtoCart(product._id)}
+            className="mt-4 w-full rounded-xl bg-accent-500 px-4 py-3 font-semibold text-white transition hover:bg-accent-600 active:scale-95"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

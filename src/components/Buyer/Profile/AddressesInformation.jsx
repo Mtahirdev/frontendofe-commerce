@@ -1,26 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, useNavigate } from "react-router-dom";
 import { Set_Address } from "../../../server/server";
 import { setUserData } from "../../../store/feature/UserData";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
 const AddressesInformation = ({ toggleFun }) => {
-  let dispatch = useDispatch();
-  let navigate = useNavigate();
-  let [loading, setloading] = useState(false);
-  let { user, token } = useSelector((state) => state.userstore);
+  const dispatch = useDispatch();
+  const { user, token } = useSelector((state) => state.userstore);
+  const addresses = user.userdata.address || [];
 
-  let SubmitFun = async (id) => {
-    setloading(true);
-    console.log(id);
-
-    let data = { id };
-
-    let res = await Set_Address(data, token);
-    console.log(res);
+  const SubmitFun = async (id) => {
+    const res = await Set_Address({ id }, token);
     if (res.msg) {
       dispatch(setUserData(res.user));
       toast.success("address is active");
@@ -28,58 +18,60 @@ const AddressesInformation = ({ toggleFun }) => {
       toast.error("try again");
     }
   };
+
   return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
-
-      <div className="w-[90%] mt-3 shadow-2xl shadow-gray-400 mb-6 pt-3 pb-3 ml-3">
-        <Form className="flex flex-col justify-center items-center gap-3 lg:grid lg:grid-cols-3 lg:grid-rows-1 ">
-          {user.userdata.address.map((ele, index) => {
-            let active = ele.active;
-
-            return (
-              <>
-                <button
-                  key={ele._id}
-                  onClick={() => SubmitFun(ele._id)}
-                  type="button"
-                  className="border-2 h-fit pb-3 w-[90%] rounded-2xl"
-                >
-                  <label
-                    htmlFor={ele.addressName}
-                    // className=" border-2 h-fit pb-3 w-[90%] rounded-2xl  "
-                  >
-                    <input
-                      type="radio"
-                      name="address"
-                      checked={ele.active}
-                      className="ml-4 mt-3 w-6 h-6 "
-                    />
-                    <h1 className="text-2xl ml-5 font-bold">
-                      {ele.addressName}
-                    </h1>
-                    <h2 className="text-[18px] ml-5 font-bold">
-                      {ele.phoneNumber}
-                    </h2>
-                    <p className="ml-5 font-bold">{ele.address}</p>
-                  </label>
-                </button>
-              </>
-            );
-          })}
-        </Form>
-        <div className="w-full h-fit flex justify-center mt-3">
-          <button
-            onClick={() => {
-              toggleFun("add address");
-            }}
-            className="border-2 border-gray-300 rounded-[10px] pl-2 pr-2 pt-1 pb-1"
-          >
-            Add Address
-          </button>
+    <div className="w-[95%] lg:w-[90%] mx-auto bg-white border border-ink-200 rounded-2xl shadow-sm p-5 mb-4">
+      {addresses.length === 0 ? (
+        <p className="text-center text-ink-500 py-4">
+          You have not added any address yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {addresses.map((ele) => (
+            <button
+              key={ele._id}
+              type="button"
+              onClick={() => SubmitFun(ele._id)}
+              className={`flex gap-3 text-left rounded-2xl border-2 p-4 transition ${
+                ele.active
+                  ? "border-brand-600 bg-brand-50"
+                  : "border-ink-200 bg-white hover:border-brand-300"
+              }`}
+            >
+              <span
+                className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                  ele.active ? "border-brand-600" : "border-ink-300"
+                }`}
+              >
+                {ele.active && (
+                  <span className="h-2.5 w-2.5 rounded-full bg-brand-600"></span>
+                )}
+              </span>
+              <span>
+                <span className="block text-lg font-bold text-ink-800">
+                  {ele.addressName}
+                </span>
+                <span className="block text-sm font-medium text-ink-700">
+                  {ele.phoneNumber}
+                </span>
+                <span className="block text-sm text-ink-500 mt-1">
+                  {ele.address}
+                </span>
+              </span>
+            </button>
+          ))}
         </div>
+      )}
+
+      <div className="w-full flex justify-center mt-6">
+        <button
+          onClick={() => toggleFun("add address")}
+          className="rounded-xl border-2 border-brand-600 text-brand-600 hover:bg-brand-600 hover:text-white font-semibold px-6 py-2 transition-colors"
+        >
+          Add Address
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 

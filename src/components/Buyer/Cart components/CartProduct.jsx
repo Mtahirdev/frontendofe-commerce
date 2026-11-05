@@ -81,77 +81,73 @@ const CartProduct = ({ product }) => {
     dispatch(SetQytDecrement({ id, qyt }));
   };
   return (
-    <>
-      <div class="flex w-full max-w-3xl flex-col gap-4 rounded-2xl bg-white p-4 shadow-2xl  sm:flex-row">
-        <ToastContainer position="top-right" autoClose={3000} />
-        <Link to={`productdetail/${product._id}`}>
-          <div class="h-54 w-full shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-36 sm:w-36">
-            <img
-              src={product.mainimg}
-              alt="Nike Air Max"
-              class="h-full w-full object-cover"
-            />
+    <div className="flex w-full max-w-3xl flex-col gap-4 rounded-2xl bg-white border border-ink-200 p-4 shadow-sm hover:shadow-md transition sm:flex-row">
+      <Link to={`/buyer/productdetail/${product._id}`}>
+        <div className="h-54 w-full shrink-0 overflow-hidden rounded-xl bg-ink-100 sm:h-36 sm:w-36">
+          <img
+            src={product.mainimg}
+            alt={product.productName}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </Link>
+
+      <div className="flex flex-1 flex-col justify-between text-left">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-ink-800">
+              {product.productName}
+            </h2>
+            <p className="mt-1 text-sm text-ink-500">
+              {product.color} · Size {product.size}
+            </p>
           </div>
-        </Link>
 
-        <div class="flex flex-1  flex-col justify-between">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h2 class="text-lg font-semibold text-gray-800">
-                {product.productName}
-              </h2>
+          <button
+            onClick={() => Deletcart(product._id)}
+            className="text-sm font-medium text-danger-500 hover:text-danger-600 hover:underline transition"
+          >
+            Remove
+          </button>
+        </div>
 
-              <p class="mt-1 text-sm text-gray-500">
-                {product.color} · Size {product.size}
-              </p>
-            </div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span className="text-xl font-bold text-accent-600">
+              Rs {Math.round(lessprice)}
+            </span>
+            <span className="ml-2 text-sm text-ink-400 line-through">
+              Rs {product.price}
+            </span>
+          </div>
 
+          <div className="flex items-center overflow-hidden rounded-lg border border-ink-200 bg-ink-50">
             <button
-              onClick={() => Deletcart(product._id)}
-              class="text-sm font-medium mt-1 sm:mt-0 ml-2 sm:ml-0 text-red-500 transition hover:text-red-700"
+              onClick={() => decreaseQyt(product._id)}
+              className="flex h-9 w-9 items-center justify-center text-xl font-semibold text-ink-700 transition hover:bg-brand-50 hover:text-brand-600"
             >
-              Remove
+              −
+            </button>
+            <span className="flex h-9 min-w-10 items-center justify-center border-x border-ink-200 bg-white px-3 font-semibold text-ink-800">
+              {qyt}
+            </span>
+            <button
+              onClick={() => increaseQyt(product._id)}
+              className="flex h-9 w-9 items-center justify-center text-xl font-semibold text-ink-700 transition hover:bg-brand-50 hover:text-brand-600"
+            >
+              +
             </button>
           </div>
 
-          <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <span class="text-xl font-bold text-gray-900">${lessprice}</span>
-
-              <span class="ml-2 text-sm text-gray-400 line-through">
-                ${product.price}
-              </span>
-            </div>
-
-            <div class="flex items-center overflow-hidden rounded-lg border border-gray-300">
-              <button
-                onClick={() => decreaseQyt(product._id)}
-                class="flex h-9 w-9 items-center justify-center text-xl font-semibold text-gray-700 transition hover:bg-gray-100"
-              >
-                −
-              </button>
-
-              <span class="flex h-9 min-w-10 items-center justify-center border-x border-gray-300 px-3 font-semibold text-gray-800">
-                {qyt}
-              </span>
-
-              <button
-                onClick={() => increaseQyt(product._id)}
-                class="flex h-9 w-9 items-center justify-center text-xl font-semibold text-gray-700 transition hover:bg-gray-100"
-              >
-                +
-              </button>
-            </div>
-
-            <div class="text-right">
-              <p class="text-xs text-gray-500">Total</p>
-
-              <p class="text-lg font-bold text-gray-900">${lessprice}</p>
-            </div>
+          <div className="text-right">
+            <p className="text-xs text-ink-500">Total</p>
+            <p className="text-lg font-bold text-ink-800">
+              Rs {Math.round(lessprice * qyt)}
+            </p>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

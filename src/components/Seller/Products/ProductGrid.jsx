@@ -2,41 +2,32 @@ import React, { useEffect, useState } from "react";
 import ProductBox from "./ProductBox";
 import { useDispatch, useSelector } from "react-redux";
 import { FetchItem } from "../../../server/server";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { SetProductArray } from "../../../store/feature/ProductsData";
 
 const ProductGrid = () => {
-  let navigate = useNavigate();
-  let [loading, setloading] = useState(false);
-  let [err, seterr] = useState(true);
-  let dispatch = useDispatch();
-  let { token } = useSelector((state) => state.userstore);
-  let { productarr } = useSelector((state) => state.productstore);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [loading, setloading] = useState(true);
+  const [err, seterr] = useState(false);
+  const { token } = useSelector((state) => state.userstore);
+  const { productarr } = useSelector((state) => state.productstore);
+
   useEffect(() => {
     FetchItem(token).then((res) => {
-      console.log(res);
-
       try {
         if (res.msg_login) {
           setloading(false);
-
           toast.error("please login");
-          setTimeout(() => {
-            navigate("/auth/login");
-          }, 3000);
+          setTimeout(() => navigate("/auth/login"), 3000);
         } else if (res.msg_signup) {
           setloading(false);
-
           toast.error("please signup");
-          setTimeout(() => {
-            navigate("/auth/signup");
-          }, 3000);
+          setTimeout(() => navigate("/auth/signup"), 3000);
         } else if (res.msgerr) {
           setloading(false);
-
+          seterr(true);
           toast.error("please try again later");
         } else {
           setloading(false);
@@ -51,37 +42,45 @@ const ProductGrid = () => {
       }
     });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="w-[90%] grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-80 rounded-2xl bg-white border border-ink-200 animate-pulse"
+          ></div>
+        ))}
+      </div>
+    );
+  }
+
+  if (err) {
+    return (
+      <div className="w-[90%] rounded-2xl bg-danger-50 text-danger-600 text-center py-8 font-semibold">
+        Failed to fetch items
+      </div>
+    );
+  }
+
+  if (!productarr || productarr.length === 0) {
+    return (
+      <div className="w-[90%] rounded-2xl bg-white border border-ink-200 text-center py-12">
+        <p className="text-lg font-semibold text-ink-800">No products yet</p>
+        <p className="text-ink-500 mt-1">
+          Add your first product to start selling.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {loading && (
-        <>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-blue-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-green-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </>
-      )}
-      <ToastContainer position="top-right" autoClose={3000} />
-      {err == true ? (
-        <div className="w-[90%]  grid grid-cols-1 gap-4 md:grid-cols-2 h-fit">
-          <h1 className="text-2xl text-black text-center">
-            Failed to fetch item
-          </h1>
-        </div>
-      ) : (
-        <div className="w-[90%]  grid grid-cols-1 gap-4 md:grid-cols-2 h-fit">
-          {productarr.map((ele, index) => {
-            return <ProductBox key={index} product={ele}></ProductBox>;
-          })}
-        </div>
-      )}
-    </>
+    <div className="w-[90%] grid grid-cols-1 gap-4 md:grid-cols-2 lg:w-[80%] desk:grid-cols-3">
+      {productarr.map((ele) => (
+        <ProductBox key={ele._id} product={ele} />
+      ))}
+    </div>
   );
 };
 

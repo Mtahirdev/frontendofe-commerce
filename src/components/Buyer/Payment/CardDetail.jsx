@@ -3,30 +3,17 @@ import CreditCard from "./CardDetailBox/CreditCard";
 import JazzCash from "./CardDetailBox/JazzCash";
 import EasyPaisa from "./CardDetailBox/EasyPaisa";
 import CashOnDelivery from "./CardDetailBox/CashOnDelivery";
-import { useSelector } from "react-redux";
 
 const CardDetail = ({ method, collectData }) => {
   return (
-    <>
-      <div className="w-[95%] md:w-[90%] rounded-2xl h-fit md:h-110 lg:h-fit pb-3 border-2 border-blue-700 md:col-span-2 lg:col-span-1 shadow-2xl shadow-gray-300">
-        {method == "Cash On Delivery" ? <CashOnDelivery></CashOnDelivery> : ""}
-        {method == "Jazz Cash" ? (
-          <JazzCash collectData={collectData}></JazzCash>
-        ) : (
-          ""
-        )}
-        {method == "Easypaisa" ? (
-          <EasyPaisa collectData={collectData}></EasyPaisa>
-        ) : (
-          ""
-        )}
-        {method == "Credit/Debt Card" ? (
-          <CreditCard collectData={collectData}></CreditCard>
-        ) : (
-          ""
-        )}
-      </div>
-    </>
+    <div className="bg-white border border-ink-200 shadow-sm rounded-2xl p-4 h-fit">
+      {method === "Cash On Delivery" && <CashOnDelivery />}
+      {method === "Jazz Cash" && <JazzCash collectData={collectData} />}
+      {method === "Easypaisa" && <EasyPaisa collectData={collectData} />}
+      {method === "Credit/Debt Card" && (
+        <CreditCard collectData={collectData} />
+      )}
+    </div>
   );
 };
 

@@ -3,56 +3,46 @@ import PaymentHeading from "./PaymentHeading.jsx";
 import SelectPaymentCard from "./SelectPaymentCard.jsx";
 import CardDetail from "./CardDetail.jsx";
 import OrderSummary from "./OrderSummary.jsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { PlaceOrder } from "../../../server/server.js";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { setOrderData, setUserData } from "../../../store/feature/UserData.js";
 
 const PaymentMain = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loading, setloading] = useState(false);
+  const [method, setmethod] = useState("Credit/Debt Card");
+  const [data, setdata] = useState({});
+  const { user, token } = useSelector((s) => s.userstore);
+  const { cartarr } = useSelector((s) => s.productstore);
+
   // calculation
-  let dispatch = useDispatch();
-  let navigate = useNavigate();
-  let [loading, setloading] = useState();
-  let { user, token, order } = useSelector((s) => s.userstore);
-  let { cartarr } = useSelector((s) => s.productstore);
-  console.log(cartarr);
+  const discount = 0;
+  const subtotal = Math.round(
+    cartarr.reduce((sum, ele) => {
+      const discounted = ele.price - ele.price * (ele.discount / 100);
+      return sum + discounted * ele.qyt;
+    }, 0),
+  );
+  const shipping = subtotal > 4000 ? 0 : 200;
+  const total = subtotal + shipping;
 
-  let arr = cartarr.map((ele) => {
-    let a = ele.price * (ele.discount / 100);
-    return ele.price - a;
-  });
+  const address = user.userdata.address.find((ele) => ele.active == true);
 
-  let value = arr.reduce((prev, cur, index) => {
-    return cur + prev;
-  });
-
-  let shipping = 200;
-
-  if (value > 4000) {
-    shipping = 0;
-  }
-
-  let discount = 0;
-
-  let total = value + shipping;
-  // end
-
-  let address = user.userdata.address.find((ele) => {
-    return ele.active == true;
-  });
-
-  let [method, setmethod] = useState("Cash On Delivery");
-  let [data, setdata] = useState({});
-  let collectData = async (e) => {
-    let formdata = Object.fromEntries(new FormData(e.target));
+  const collectData = async (e) => {
+    const formdata = Object.fromEntries(new FormData(e.target));
     setdata(formdata);
   };
 
-  let pushData = async (e) => {
-    let a = {
+  const pushData = async () => {
+    if (!address) {
+      toast.error("please add and select a delivery address in your profile");
+      return;
+    }
+
+    const order = {
       data,
       shipping,
       total,
@@ -63,25 +53,18 @@ const PaymentMain = () => {
       discount,
     };
 
-    console.log(a);
-
-    let res = await PlaceOrder(a, token);
-    console.log(res);
     setloading(true);
-
     try {
+      const res = await PlaceOrder(order, token);
+
       if (res.msg_login) {
         setloading(false);
         toast.error("please login");
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 3000);
+        setTimeout(() => navigate("/auth/login"), 3000);
       } else if (res.msg_signup) {
         setloading(false);
         toast.error("please signup");
-        setTimeout(() => {
-          navigate("/auth/signup");
-        }, 3000);
+        setTimeout(() => navigate("/auth/signup"), 3000);
       } else if (res.msg_validation) {
         setloading(false);
         toast.error(res.validation.msg);
@@ -93,6 +76,10 @@ const PaymentMain = () => {
         toast.success("your order is placed");
         dispatch(setUserData(res.user));
         dispatch(setOrderData(res.order));
+        setTimeout(() => navigate("/buyer"), 3000);
+      } else {
+        setloading(false);
+        toast.error("please try again later");
       }
     } catch (error) {
       setloading(false);
@@ -101,30 +88,44 @@ const PaymentMain = () => {
     }
   };
 
+  if (cartarr.length === 0) {
+    return (
+      <div className="w-[90%] mx-auto text-center py-16">
+        <h1 className="text-2xl font-bold text-ink-800">Your cart is empty</h1>
+        <p className="text-ink-500 mt-2">
+          Add some products before checking out.
+        </p>
+        <Link
+          to="/buyer"
+          className="inline-block mt-5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 transition-colors"
+        >
+          Continue shopping
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <>
       {loading && (
-        <>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-blue-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-green-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </>
-      )}
-      <ToastContainer position="top-right" autoClose={3000} />
-      <div>
-        <PaymentHeading></PaymentHeading>
-        <div className="grid grid-cols-1  md:grid-cols-4 md:grid-rows-2 place-items-center justify-items-center gap-3 lg:grid-cols-3 lg:grid-rows-1 w-screen h-full mb-4 ">
-          <SelectPaymentCard setmethod={setmethod}></SelectPaymentCard>
-          <CardDetail method={method} collectData={collectData}></CardDetail>
-          <OrderSummary pushData={pushData}></OrderSummary>
+        <div className="fixed z-50 inset-0 bg-ink-900/50 flex justify-center items-center">
+          <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
         </div>
+      )}
+
+      <PaymentHeading />
+      <div className="w-[95%] mx-auto grid grid-cols-1 gap-4 items-start md:grid-cols-2 lg:grid-cols-3 mb-6">
+        <SelectPaymentCard method={method} setmethod={setmethod} />
+        <CardDetail method={method} collectData={collectData} />
+        <OrderSummary
+          count={cartarr.length}
+          subtotal={subtotal}
+          shipping={shipping}
+          discount={discount}
+          total={total}
+          loading={loading}
+          pushData={pushData}
+        />
       </div>
     </>
   );

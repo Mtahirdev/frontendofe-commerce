@@ -15,16 +15,25 @@ const Category = () => {
   ];
   return (
     <>
-      <h1 className="ml-4 text-3xl font-extrabold mt-2">Category</h1>
-      <div className="flex mx-auto w-[90%] md:justify-center  gap-8 mt-2  items-center  overflow-x-scroll scrollbar-none">
-        {arr.map((e, i) => {
-          return (
-            <a key={e.name} className="flex flex-col gap-2 w-full ">
-              <img src={e.img} alt="" className="w-50 h-30 rounded-2xl" />
-              <h3 className="w-30 text-center md:ml-3 lg:ml-6">{e.name}</h3>
-            </a>
-          );
-        })}
+      <h1 className="ml-4 mt-6 text-3xl font-extrabold text-ink-800">
+        Category
+      </h1>
+      <div className="flex mx-auto w-[90%] md:justify-center gap-8 mt-3 items-center overflow-x-scroll scrollbar-none">
+        {arr.map((e) => (
+          <a
+            key={e.name}
+            className="group flex flex-col gap-2 w-full cursor-pointer"
+          >
+            <img
+              src={e.img}
+              alt={e.name}
+              className="w-50 h-30 rounded-2xl object-cover border-2 border-transparent group-hover:border-brand-500 transition"
+            />
+            <h3 className="w-30 text-center font-medium text-ink-700 group-hover:text-brand-600 transition-colors md:ml-3 lg:ml-6">
+              {e.name}
+            </h3>
+          </a>
+        ))}
       </div>
     </>
   );

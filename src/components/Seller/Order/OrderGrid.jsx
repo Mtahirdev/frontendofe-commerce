@@ -1,45 +1,67 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import OrderBox from "./OrderBox.jsx";
 import { FetchSellerOrder } from "../../../server/server.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { setOrderData } from "../../../store/feature/UserData.js";
 
 const OrderGrid = () => {
-  let { order, token } = useSelector((s) => s.userstore);
-  let navigate = useNavigate();
-  useEffect(() => {
-    FetchSellerOrder(token).then((res) => {
-      console.log(res);
+  const { order, token } = useSelector((s) => s.userstore);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loading, setloading] = useState(true);
 
-      try {
+  useEffect(() => {
+    FetchSellerOrder(token)
+      .then((res) => {
         if (res.msg_login) {
-          setTimeout(() => {
-            // navigate("/auth/login");
-          }, 500);
+          toast.error("please login");
+          setTimeout(() => navigate("/auth/login"), 3000);
         } else if (res.msg_signup) {
-          setTimeout(() => {
-            navigate("/auth/signup");
-          }, 4000);
+          toast.error("please signup");
+          setTimeout(() => navigate("/auth/signup"), 3000);
         } else if (res.order) {
           dispatch(setOrderData(res.order));
-          setTimeout(() => {
-            navigate(`/${res.user.type}`);
-          }, 500);
         } else {
+          toast.error("please try again later");
         }
-      } catch (error) {
-        navigate("");
-      }
-    });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("please try again later");
+      })
+      .finally(() => setloading(false));
   }, []);
-  return (
-    <>
-      <div className="grid w-full h-full pb-5 grid-cols-1 md:grid-cols-2 gap-4">
-        {order?.map((ele, index) => {
-          return <OrderBox ele={ele} />;
-        })}
+
+  if (loading) {
+    return (
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+        {[1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-64 rounded-2xl border border-ink-200 bg-white animate-pulse"
+          ></div>
+        ))}
       </div>
-    </>
+    );
+  }
+
+  if (!order || order.length === 0) {
+    return (
+      <div className="w-full rounded-2xl border border-ink-200 bg-white py-12 text-center">
+        <p className="text-lg font-semibold text-ink-800">No orders yet</p>
+        <p className="mt-1 text-ink-500">New orders will appear here.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid w-full grid-cols-1 gap-4 pb-5 md:grid-cols-2">
+      {order.map((ele) => (
+        <OrderBox ele={ele} key={ele._id} />
+      ))}
+    </div>
   );
 };
 

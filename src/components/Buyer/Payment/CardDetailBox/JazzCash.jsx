@@ -1,42 +1,73 @@
-import React from "react";
-import jazzcash from "../.../../../../../assets/jazzcash.png";
+import React, { useState } from "react";
 import { Form } from "react-router-dom";
+import { toast } from "react-toastify";
+import jazzcash from "../../../../assets/jazzcash.png";
 
 const JazzCash = ({ collectData }) => {
+  const [saved, setsaved] = useState(false);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    collectData(e);
+    setsaved(true);
+    toast.success("JazzCash number added");
+  };
+
   return (
-    <>
-      <div className="w-full h-fit">
-        <div className="w-full h-fit flex flex-col gap-4 lg:gap-2 items-center justify-center">
-          <h1 className="font-bold text-2xl text-center mt-1">
-            Jazz Cash Detail
-          </h1>
-          <p className="font-bold w-[80%] text-center">
-            Enter your JazzCash mobile number to proceed
-          </p>
-          <img src={jazzcash} className="w-36 h-40 lg:w-30 lg:h-30 " alt="" />
-        </div>
-        <Form onSubmit={collectData}>
-          <label htmlFor="mobile-number" className="font-bold text-[20px] ml-3">
+    <div className="w-full">
+      <div className="flex flex-col gap-2 items-center justify-center text-center">
+        <h1 className="font-bold text-2xl text-ink-800">JazzCash Detail</h1>
+        <p className="text-ink-500 w-[85%]">
+          Enter your JazzCash mobile number to proceed
+        </p>
+        <img
+          src={jazzcash}
+          className="w-28 h-28 object-contain"
+          alt="JazzCash"
+        />
+      </div>
+
+      <Form
+        onSubmit={onSubmit}
+        onChange={() => setsaved(false)}
+        className="flex flex-col gap-3 mt-3"
+      >
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="mobile-number"
+            className="text-sm font-medium text-ink-500"
+          >
             Mobile Number
           </label>
           <input
-            type="number"
+            type="tel"
             name="mobile-number"
             id="mobile-number"
-            className="pt-1 pb-1 w-[80%]  ml-3 rounded-[10px]"
+            inputMode="numeric"
+            maxLength={11}
+            pattern="03[0-9]{9}"
+            required
+            placeholder="03XX XXXXXXX"
+            className="w-full px-4 py-3 bg-white border border-ink-200 rounded-xl text-ink-800 placeholder:text-ink-400 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
           />
-          <button
-            type="submit"
-            className="px-5 py-1 rounded-2xl bg-blue-500 hover:bg-blue-400"
-          >
-            Add Detail
-          </button>
-        </Form>
-        <p className="font-bold mt-3 w-[80%] text-center ml-5 text-[20px]">
-          Please enter a correct mobile number
-        </p>
-      </div>
-    </>
+        </div>
+
+        <button
+          type="submit"
+          className={`w-full py-3 rounded-xl font-semibold transition ${
+            saved
+              ? "bg-success-50 text-success-600"
+              : "bg-brand-600 hover:bg-brand-700 text-white"
+          }`}
+        >
+          {saved ? "✓ Detail added" : "Add Detail"}
+        </button>
+      </Form>
+
+      <p className="mt-3 text-sm text-center text-ink-500">
+        Please enter a correct mobile number
+      </p>
+    </div>
   );
 };
 

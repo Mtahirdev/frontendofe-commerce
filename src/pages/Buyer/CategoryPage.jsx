@@ -9,7 +9,7 @@ import SideBar from "../../components/Buyer/Navbar components/SideBar.jsx";
 const CategoryPage = () => {
   return (
     <>
-      <div>
+      <div className="bg-ink-50">
         <div>
           <div className="overflow-x-hidden">
             <Upper_Navbar />

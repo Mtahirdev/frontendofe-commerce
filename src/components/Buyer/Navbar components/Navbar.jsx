@@ -1,72 +1,60 @@
 import React from "react";
-import { FaHome } from "react-icons/fa";
-import { BiCategory } from "react-icons/bi";
-import { FaBoxOpen } from "react-icons/fa";
-import { FaShoppingCart } from "react-icons/fa";
-import { CgProfile } from "react-icons/cg";
-import { IoBag } from "react-icons/io5";
-import { FaDollarSign } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
-import { Link, Form, NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
-const Navbar = () => {
-  const { type } = useSelector((state) => {
-    return state.userstore;
-  });
-  console.log(type);
+import { NavLink } from "react-router-dom";
 
+const links = [
+  { to: "/buyer", label: "Home", end: true },
+  { to: "/buyer/category", label: "Category" },
+  { to: "/buyer/cart", label: "Cart" },
+  { to: "/buyer/profile", label: "Profile" },
+  { to: "/buyer/order", label: "Order" },
+  { to: "/buyer/notification", label: "Notification" },
+];
+
+const Navbar = () => {
   return (
-    <>
-      {/* big screen */}
-      <div className="hidden md:flex  bg-gray-50 border-b-2 border-gray-200 fixed top-0 left-0 z-50">
-        <div className="  items-center w-screen  justify-evenly flex mt-3">
-          <div className="w-[15%] lg:w-[20%] ">
-            <h1 className="font-bold text-3xl capitalize mb-2 text-center">
-              shoppy
-            </h1>
-          </div>
-          <div className="w-[50%] lg:w-[70%]  ">
-            <ul className="flex text-[15px] justify-evenly">
-              <NavLink to="/buyer">
-                <li>Home</li>
+    <div className="hidden md:flex w-full bg-white border-b border-ink-200 shadow-sm fixed top-0 left-0 z-50">
+      <div className="w-full flex justify-evenly items-center py-3">
+        <div className="w-[15%] lg:w-[20%]">
+          <h1 className="font-bold text-3xl capitalize text-center text-brand-600">
+            shoppy
+          </h1>
+        </div>
+
+        <ul className="w-[50%] lg:w-[70%] flex text-[15px] justify-evenly">
+          {links.map((l) => (
+            <li key={l.to}>
+              <NavLink
+                to={l.to}
+                end={l.end}
+                className={({ isActive }) =>
+                  `pb-1 border-b-2 transition-colors ${
+                    isActive
+                      ? "text-brand-600 border-brand-600 font-medium"
+                      : "text-ink-500 border-transparent hover:text-brand-600"
+                  }`
+                }
+              >
+                {l.label}
               </NavLink>
-              <NavLink to="/buyer/category">
-                <li>Category</li>
-              </NavLink>
-              <NavLink to="/buyer/cart">
-                <li>
-                  Cart
-                  {/* <span className=" absolute top-4 text-blue-600  lg:left-[50.5%] mobileF:left-[50.5%] rounded-full p-0 h-3">
-                    0
-                  </span> */}
-                </li>
-              </NavLink>
-              <NavLink to="/buyer/profile">
-                <li>Profile</li>
-              </NavLink>
-              <NavLink to="/buyer/order">
-                <li>Order</li>
-              </NavLink>
-              <NavLink to="/buyer/notification">
-                <li>Notification</li>
-              </NavLink>
-            </ul>
-          </div>
-          <div className="w-[30%] lg:w-[40%]  ">
-            <form action="" className="flex justify-evenly ">
-              <input
-                type="text"
-                className="w-44 pt-1 pb-1 placeholder:capitalize placeholder:pl-2 border-2 border-gray-200 rounded-2xl lg:w-52 xl:w-64"
-                placeholder="search"
-              />
-              <button className="text-2xl">
-                <FaSearch />
-              </button>
-            </form>
-          </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="w-[30%] lg:w-[40%]">
+          <form className="flex justify-evenly items-center">
+            <input
+              type="text"
+              className="w-44 py-1.5 px-3 text-ink-800 bg-ink-50 placeholder:capitalize placeholder:text-ink-400 border border-ink-200 rounded-2xl focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 lg:w-52 xl:w-64"
+              placeholder="search"
+            />
+            <button className="p-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white transition-colors">
+              <FaSearch />
+            </button>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,85 +1,72 @@
 import React from "react";
-import { CiDeliveryTruck } from "react-icons/ci";
 import { IoIosAlert } from "react-icons/io";
-import { PiArrowsCounterClockwiseLight } from "react-icons/pi";
-import { RiSecurePaymentLine } from "react-icons/ri";
-import { TfiHeadphoneAlt } from "react-icons/tfi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Cartlower = () => {
-  let navigate = useNavigate();
-  let { cartarr } = useSelector((s) => s.productstore);
-  let value;
-  console.log(cartarr);
+  const navigate = useNavigate();
+  const { cartarr } = useSelector((s) => s.productstore);
 
-  if (cartarr.length == 0) {
-    value = 0;
-    return;
-  }
+  if (!cartarr || cartarr.length === 0) return null;
 
-  let arr = cartarr.map((ele) => {
-    let a = ele.price * (ele.discount / 100);
-    return ele.price - a;
-  });
+  const subtotal = Math.round(
+    cartarr.reduce((sum, ele) => {
+      const discounted = ele.price - ele.price * (ele.discount / 100);
+      return sum + discounted * ele.qyt;
+    }, 0),
+  );
 
-  console.log(arr);
-
-  value = arr?.reduce((prev, cur, index) => {
-    return cur + prev;
-  });
-
-  let shipping = 200;
-
-  if (value > 4000) {
-    shipping = 0;
-  }
-
-  let total = value + shipping;
+  const shipping = subtotal > 4000 ? 0 : 200;
+  const total = subtotal + shipping;
 
   return (
-    <>
-      <div className="flex flex-col w-[90%] lg:w-[50%]  h-fit border mt-2 border-gray-400    ">
-        <h1 className="text-2xl ml-3 font-bold">Order Summary</h1>
-        <div className="flex w-full gap-28 ml-3 mt-2">
-          <h1 className="font-bold">
-            Subtotal <span>({cartarr.length})</span>
-          </h1>
-          <h1 className="font-bold">{value}</h1>
-        </div>
-        <div className="flex w-full  ml-3 mt-2">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <h1 className="font-bold">shipping</h1>
-              <h1 className="font-bold">
-                <IoIosAlert className="mt-1 font-bold" />
-              </h1>
-            </div>
-            <p className="font-bold mt-2">Free shipping over Rs:4000</p>
-          </div>
-          <div className="font-bold ml-2">Rs:{shipping}</div>
-        </div>
-        <div className="flex w-full gap-32 ml-3 mt-2">
-          <h1 className="font-bold">Discount</h1>
-          <h1 className="font-bold"> -Rs:0</h1>
-        </div>
-        <div className="font-bold bg-gray-400 w-[90%] h-0.5 rounded-full mt-2 mx-auto pb-1 mb-2"></div>
-        <div className="flex w-full  ml-3 ">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <h1 className="font-bold text-2xl ">Total</h1>
-            </div>
-          </div>
-          <div className="font-bold ml-16 mt-1">Rs:{total}</div>
-        </div>
-        <button
-          onClick={() => navigate("/buyer/payment")}
-          className="text-2xl text-white bg-purple-500 pb-1 pt-1 pl-2 pr-2 w-[90%] sm:w-[70%] md:w-[50%] mx-auto mt-1 rounded-2xl capitalize mb-2"
-        >
-          proceed to checkout
-        </button>
+    <div className="flex flex-col w-[90%] lg:w-[50%] h-fit bg-white border border-ink-200 rounded-2xl shadow-sm mt-2 mb-5 p-5">
+      <h1 className="text-2xl font-bold text-ink-800 mb-4">Order Summary</h1>
+
+      <div className="flex justify-between items-center text-ink-500">
+        <span>
+          Subtotal{" "}
+          <span className="text-ink-400">({cartarr.length} items)</span>
+        </span>
+        <span className="font-semibold text-ink-800">Rs {subtotal}</span>
       </div>
-    </>
+
+      <div className="flex justify-between items-start mt-3 text-ink-500">
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span>Shipping</span>
+            <IoIosAlert className="text-info-500" />
+          </div>
+          <p className="text-xs text-ink-400 mt-1">
+            Free shipping over Rs 4000
+          </p>
+        </div>
+        {shipping === 0 ? (
+          <span className="font-semibold text-success-600">Free</span>
+        ) : (
+          <span className="font-semibold text-ink-800">Rs {shipping}</span>
+        )}
+      </div>
+
+      <div className="flex justify-between items-center mt-3 text-ink-500">
+        <span>Discount</span>
+        <span className="font-semibold text-success-600">- Rs 0</span>
+      </div>
+
+      <div className="h-px w-full bg-ink-200 my-4"></div>
+
+      <div className="flex justify-between items-center">
+        <span className="text-xl font-bold text-ink-800">Total</span>
+        <span className="text-2xl font-bold text-accent-600">Rs {total}</span>
+      </div>
+
+      <button
+        onClick={() => navigate("/buyer/payment")}
+        className="mt-5 w-full rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-95 text-white text-lg font-semibold py-3 capitalize transition"
+      >
+        proceed to checkout
+      </button>
+    </div>
   );
 };
 
