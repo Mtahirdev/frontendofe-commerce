@@ -1,15 +1,8 @@
-import LoginImg from "../../assets/login.png";
-import LoginImgMob from "../../assets/loginmob.png";
-import { Form, Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import { Form, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { LoginFetch } from "../../server/server";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   setOrderData,
   setToken,
@@ -17,20 +10,25 @@ import {
   setUserData,
   setVerified,
 } from "../../store/feature/UserData.js";
+import AuthLayout, {
+  PasswordInput,
+  SocialButtons,
+  inputClass,
+  labelClass,
+} from "./AuthLayout.jsx";
 
 const Login = () => {
-  let [loading, setloading] = useState(false);
-  let navigate = useNavigate();
-  let dispatch = useDispatch();
-  let { token, type } = useSelector((state) => state.userstore);
-  // submit function
+  const [loading, setloading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  let SubmitFun = async (e) => {
+  const SubmitFun = async (e) => {
+    e.preventDefault();
+    setloading(true);
     try {
-      setloading(true);
-      let formdata = Object.fromEntries(new FormData(e.target));
+      const formdata = Object.fromEntries(new FormData(e.target));
+      const res = await LoginFetch(formdata);
 
-      let res = await LoginFetch(formdata);
       if (res.msg_validation) {
         setloading(false);
         toast.error(res.validation.msg);
@@ -40,122 +38,86 @@ const Login = () => {
       } else if (res.msg_signup) {
         setloading(false);
         toast.error(res.msg_signup);
-        setTimeout(() => {
-          navigate("/auth/signup");
-        }, 4000);
+        setTimeout(() => navigate("/auth/signup"), 3000);
       } else if (res.msg_otp) {
         setloading(false);
-        toast.error(" verify you email otp is send to email");
-        setTimeout(() => {
-          navigate("/auth/otp");
-        }, 4000);
+        toast.error("verify your email, otp is sent to your email");
+        setTimeout(() => navigate("/auth/otp"), 3000);
       } else if (res.msg_success) {
         setloading(false);
         toast.success("login successfully");
-
         dispatch(setToken(res.data.accesstoken));
         dispatch(setType(res.data.type));
         dispatch(setVerified(res.data.verified));
         dispatch(setUserData(res.user));
         dispatch(setOrderData(res.order));
-        setTimeout(() => {
-          navigate(`/${res.data.type}`);
-        }, 4000);
+        setTimeout(() => navigate(`/${res.data.type}`), 1500);
       } else {
         setloading(false);
         toast.error("please try again later");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      setloading(false);
+      toast.error("please try again later");
+    }
   };
 
   return (
-    <>
-      {loading && (
-        <>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-blue-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-green-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </>
-      )}
-      <ToastContainer position="top-right" autoClose={3000} />
-      <div className="min-h-screen sm:h-screen bg-slate-100 sm:flex ">
-        <div className="h-[85vw] sm:h-full sm:w-[50%]">
-          <img
-            src={LoginImgMob}
-            alt=""
-            className="w-full h-full object-cover  "
+    <AuthLayout
+      title="Welcome Back"
+      subtitle="Login to your account"
+      loading={loading}
+    >
+      <Form onSubmit={SubmitFun} className="flex flex-col gap-4">
+        <div>
+          <label htmlFor="email" className={labelClass}>
+            Email
+          </label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            className={inputClass}
           />
         </div>
 
-        <div className="relative -mt-16  bg-white rounded-t-[40px] min-h-[60%] sm:h-full sm:mt-0 sm:w-[60%] shadow-2xl  flex-col flex items-center">
-          <div className="w-16 h-2 rounded-full bg-gray-500 mt-4 "></div>
-          <h1 className="text-center text-2xl font-bold w-full mt-3">
-            Welcome Back
-          </h1>
-          <p className="text-center w-full font-bold mt-1">
-            Login to your account
-          </p>
-          <Form className="flex flex-col pb-9 sm:pb-0 sm " onSubmit={SubmitFun}>
-            <label htmlFor="email" className="text-2xl mt-2">
-              Email:
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              className="mt-2 w-60 lg:w-80 pt-1 pb-1 rounded-[10px] border border-gray-400"
-            />
-            <label htmlFor="password" className="text-2xl mt-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              className="mt-2 w-60 lg:w-80 pt-1 pb-1 rounded-[10px] border border-gray-400"
-            />
-            <Link className="text-right text-blue-600 mt-1">
-              Forget password?
-            </Link>
-            <button className="mt-2 w-60 lg:w-80 pt-1 pb-1 rounded-[10px] border border-gray-400 bg-blue-500 text-white">
-              Login
-            </button>
-            <div className="flex gap-1 w-full mt-2 items-center justify-center">
-              <div className="w-[20%] rounded-full h-0.5 bg-gray-500"></div>
-              <div>or continue with</div>
-              <div className="w-[20%] rounded-full h-0.5 bg-gray-500"></div>
-            </div>
-            <div className="flex flex-col w-full text-center justify-center items-center gap-3">
-              <button className="flex items-center justify-center  mt-2 w-60 pt-1 pb-1 rounded-[10px] border border-gray-400 gap-3  ">
-                <div>Google</div>
-                <div>
-                  <FcGoogle className="text-2xl" />
-                </div>
-              </button>
-              <button className="flex items-center justify-center  mt-2 w-60 pt-1 pb-1 rounded-[10px] border border-gray-400 gap-3  ">
-                <div>Facebook</div>
-                <div>
-                  <img
-                    src="https://cdn.simpleicons.org/facebook/1877F2"
-                    className="w-9 h-9"
-                  />
-                </div>
-              </button>
-            </div>
-            <h1 className="flex items-center w-full text-blue-600 mt-1 ml-2 justify-center">
-              <Link>Don't have an account? Signup</Link>
-            </h1>
-          </Form>
+        <div>
+          <label htmlFor="password" className={labelClass}>
+            Password
+          </label>
+          <PasswordInput />
+          <button
+            type="button"
+            onClick={() => toast.info("Password reset is not available yet")}
+            className="mt-1.5 block w-full text-right text-sm text-brand-600 hover:underline"
+          >
+            Forgot password?
+          </button>
         </div>
-      </div>
-    </>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-brand-600 py-3 font-semibold text-white transition hover:bg-brand-700 active:scale-95 disabled:opacity-60"
+        >
+          Login
+        </button>
+      </Form>
+
+      <SocialButtons />
+
+      <p className="mt-6 text-center text-ink-500">
+        Don't have an account?{" "}
+        <Link
+          to="/auth/signup"
+          className="font-semibold text-brand-600 hover:underline"
+        >
+          Sign up
+        </Link>
+      </p>
+    </AuthLayout>
   );
 };
 

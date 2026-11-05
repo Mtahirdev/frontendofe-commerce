@@ -1,130 +1,125 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, Link, useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { OtpFetch, RequestOtpFetch } from "../../server/server.js";
 
+const LENGTH = 4;
+
 const Otpcomponent = () => {
-  let length = 4;
-  const [otp, setotp] = useState(new Array(length).fill(""));
-  const [otpa, setotpa] = useState("");
-  let [loading, setloading] = useState(false);
-  let navigate = useNavigate();
-  const ref = useRef([]);
+  const [otp, setotp] = useState(new Array(LENGTH).fill(""));
+  const [loading, setloading] = useState(false);
+  const [countdown, setcountdown] = useState(0);
+  const navigate = useNavigate();
+  const refs = useRef([]);
+  const timerRef = useRef(null);
 
-  let handle_change = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
-    let newotp = [...otp];
-    newotp[index] = value;
-
-    let otpc = `${newotp[0]}${newotp[1]}${newotp[2]}${newotp[3]}`;
-    setotpa(otpc);
-
-    setotp(newotp);
-
-    if (value && index < length - 1) {
-      ref.current[index + 1].focus();
-    }
-  };
-
-  const handle_keydown = (e, index) => {
-    // !otp[index] means if the current input is empty, then move back on backspace
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      ref.current[index - 1].focus();
-    }
-  };
-
-  let [countdown, setcountdown] = useState(2);
-
-  const handle_resend = async () => {
-    if (countdown === 0) {
-      setcountdown(60);
-      let timer = setInterval(() => {
-        setcountdown((prev) => {
-          if (prev === 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      try {
-        setloading(true);
-        let res = await RequestOtpFetch();
-
-        if (res.msg_login) {
-          setloading(false);
-          toast.error(res.msg_login);
-          setTimeout(() => {
-            navigate("/auth/login");
-          }, 4000);
-        } else if (res.msg_already) {
-          setloading(false);
-          toast.error(res.msg_already);
-          setTimeout(() => {
-            navigate("/auth/type");
-          }, 4000);
-        } else if (res.msg_success) {
-          setloading(false);
-          toast.success(res.msg_success);
-        } else {
-          setloading(false);
-          toast.error("please try again later");
-        }
-      } catch (error) {
-        console.log(error);
-
-        setloading(false);
-        toast.error("please try again later");
-      }
-    } else {
-      toast.error(`please wait ${countdown}sec is left`);
-      return;
-    }
-  };
-  useEffect(() => {
-    let timer = setInterval(() => {
+  const startCountdown = (seconds) => {
+    clearInterval(timerRef.current);
+    setcountdown(seconds);
+    timerRef.current = setInterval(() => {
       setcountdown((prev) => {
-        if (prev === 1) {
-          clearInterval(timer);
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+  };
 
-    return () => clearInterval(timer);
+  useEffect(() => {
+    startCountdown(2); // seconds before "Resend" unlocks on first load
+    return () => clearInterval(timerRef.current);
   }, []);
 
-  // Submit fun
-  let OtpSubmit = async () => {
+  const handle_change = (value, index) => {
+    if (!/^[0-9]?$/.test(value)) return;
+    const newotp = [...otp];
+    newotp[index] = value;
+    setotp(newotp);
+    if (value && index < LENGTH - 1) refs.current[index + 1]?.focus();
+  };
+
+  const handle_keydown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      refs.current[index - 1]?.focus();
+    }
+  };
+
+  const handle_paste = (e) => {
+    const digits = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, LENGTH);
+    if (!digits) return;
+    e.preventDefault();
+    const next = new Array(LENGTH).fill("");
+    digits.split("").forEach((d, i) => (next[i] = d));
+    setotp(next);
+    refs.current[Math.min(digits.length, LENGTH - 1)]?.focus();
+  };
+
+  const handle_resend = async () => {
+    if (countdown > 0) {
+      toast.error(`please wait ${countdown}sec`);
+      return;
+    }
+    startCountdown(60);
+    setloading(true);
     try {
-      setloading(true);
-      let data = { otp: otpa };
-      let res = await OtpFetch(data);
+      const res = await RequestOtpFetch();
 
       if (res.msg_login) {
         setloading(false);
         toast.error(res.msg_login);
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 4000);
+        setTimeout(() => navigate("/auth/login"), 3000);
+      } else if (res.msg_already) {
+        setloading(false);
+        toast.error(res.msg_already);
+        setTimeout(() => navigate("/auth/type"), 3000);
+      } else if (res.msg_success) {
+        setloading(false);
+        toast.success(res.msg_success);
+      } else {
+        setloading(false);
+        toast.error("please try again later");
+      }
+    } catch (error) {
+      console.log(error);
+      setloading(false);
+      toast.error("please try again later");
+    }
+  };
+
+  const OtpSubmit = async (e) => {
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length < LENGTH) {
+      toast.error(`please enter the ${LENGTH} digit code`);
+      return;
+    }
+
+    setloading(true);
+    try {
+      const res = await OtpFetch({ otp: code });
+
+      if (res.msg_login) {
+        setloading(false);
+        toast.error(res.msg_login);
+        setTimeout(() => navigate("/auth/login"), 3000);
       } else if (res.msg_otperr) {
         setloading(false);
         toast.error(res.msg_otperr);
       } else if (res.msg_signup) {
         setloading(false);
         toast.error(res.msg_signup);
-        setTimeout(() => {
-          navigate("/auth/signup");
-        }, 4000);
+        setTimeout(() => navigate("/auth/signup"), 3000);
       } else if (res.msg_already) {
         setloading(false);
         toast.error(res.msg_already);
-        setTimeout(() => {
-          navigate("/auth/type");
-        }, 4000);
+        setTimeout(() => navigate("/auth/type"), 3000);
       } else if (res.msg_otpincorrect) {
         setloading(false);
         toast.error(res.msg_otpincorrect);
@@ -134,16 +129,13 @@ const Otpcomponent = () => {
       } else if (res.msg_success) {
         setloading(false);
         toast.success(res.msg_success);
-        setTimeout(() => {
-          navigate("/auth/type");
-        }, 4000);
+        setTimeout(() => navigate("/auth/type"), 1500);
       } else {
         setloading(false);
         toast.error("please try again later");
       }
     } catch (error) {
       console.log(error);
-
       setloading(false);
       toast.error("please try again later");
     }
@@ -152,67 +144,61 @@ const Otpcomponent = () => {
   return (
     <>
       {loading && (
-        <>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-blue-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="fixed z-50 w-full h-full inset-0 bg-black/50 flex justify-center items-center text-2xl md:text-3xl lg:text-4xl">
-            <div className="grid grid-cols-2 w-10 h-10  animate-bounce">
-              <div className="bg-green-500 w-9 h-9 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </>
+        <div className="fixed z-50 inset-0 bg-ink-900/50 flex justify-center items-center">
+          <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
+        </div>
       )}
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <div className="w-screen h-screen flex justify-center items-center text-center">
-        <div className="rounded-2xl  shadow-2xl shadow-gray-200 w-[85%] sm:w-96 h-64 text-center mb-10">
-          <h1 className="text-2xl mt-3">Enter OTP</h1>
+      <div className="flex min-h-screen w-full items-center justify-center bg-ink-50 px-4">
+        <div className="w-full max-w-sm rounded-2xl border border-ink-200 bg-white p-6 text-center shadow-sm sm:p-8">
+          <h1 className="text-2xl font-bold text-ink-800">Enter OTP</h1>
+          <p className="mt-1 text-sm text-ink-500">
+            We sent a {LENGTH} digit code to your email
+          </p>
 
           <Form
-            className="flex justify-center flex-col items-center"
             onSubmit={OtpSubmit}
+            className="mt-6 flex flex-col items-center"
           >
-            <div>
-              {otp.map((ele, index) => {
-                return (
-                  <input
-                    key={index}
-                    type="text"
-                    ref={(el) => {
-                      ref.current[index] = el;
-                    }}
-                    maxLength="1"
-                    value={ele}
-                    onChange={(e) => handle_change(e.target.value, index)}
-                    onKeyDown={(e) => handle_keydown(e, index)}
-                    className="w-12 h-12 text-center border-2 m-2 mt-5 rounded-lg text-xl focus:outline-none focus:border-blue-500"
-                  ></input>
-                );
-              })}
+            <div className="flex gap-3" onPaste={handle_paste}>
+              {otp.map((ele, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  inputMode="numeric"
+                  autoFocus={index === 0}
+                  ref={(el) => {
+                    refs.current[index] = el;
+                  }}
+                  maxLength="1"
+                  value={ele}
+                  onChange={(e) => handle_change(e.target.value, index)}
+                  onKeyDown={(e) => handle_keydown(e, index)}
+                  className="h-14 w-12 rounded-xl border-2 border-ink-200 bg-white text-center text-xl font-semibold text-ink-800 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                />
+              ))}
             </div>
+
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mt-5"
+              disabled={loading}
+              className="mt-6 w-full rounded-xl bg-brand-600 py-3 font-semibold text-white transition hover:bg-brand-700 active:scale-95 disabled:opacity-60"
             >
-              Submit
+              Verify
             </button>
           </Form>
-          <div className="capitalize mt-6 flex text-center gap-2 justify-center items-center">
-            <button className="text-blue-500 underline" onClick={handle_resend}>
-              Resend OTP
+
+          <div className="mt-5 flex items-center justify-center gap-2 text-sm">
+            <span className="text-ink-500">Didn't get the code?</span>
+            <button
+              type="button"
+              onClick={handle_resend}
+              disabled={countdown > 0}
+              className="font-semibold text-brand-600 hover:underline disabled:cursor-not-allowed disabled:text-ink-400 disabled:no-underline"
+            >
+              {countdown > 0 ? `Resend in ${countdown}s` : "Resend OTP"}
             </button>
-            <p>
-              {countdown === 0 ? (
-                ""
-              ) : (
-                <span id="countdown">
-                  in {countdown == 0 ? "" : countdown} seconds
-                </span>
-              )}
-            </p>
           </div>
         </div>
       </div>
