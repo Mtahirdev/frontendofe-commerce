@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard.jsx";
-import { BuyerCartFetchItem, BuyerFetchItem } from "../../server/server.js";
+import {
+  BuyerCartFetchItem,
+  BuyerFetchItem,
+  BuyerFetchItemAuth,
+} from "../../server/server.js";
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -12,57 +15,63 @@ import {
 } from "../../store/feature/ProductsData.js";
 
 const ProductBox = () => {
-  let { token } = useSelector((state) => state.userstore);
+  let { token, verified } = useSelector((state) => state.userstore);
   let { productarr } = useSelector((state) => state.productstore);
   let navigate = useNavigate();
   let dispatch = useDispatch();
   useEffect(() => {
-    BuyerFetchItem(token).then((res) => {
-      try {
-        if (res.msg_login) {
-          toast.error("please login");
-          setTimeout(() => {
-            navigate("/auth/login");
-          }, 3000);
-        } else if (res.msg_signup) {
-          toast.error("please signup");
-          setTimeout(() => {
-            navigate("/auth/signup");
-          }, 3000);
-        } else if (res.msgerr) {
+    if (verified) {
+      BuyerFetchItem(token).then((res) => {
+        try {
+          if (res.msg_login) {
+            toast.error("please login");
+            setTimeout(() => {
+              navigate("/auth/login");
+            }, 3000);
+          } else if (res.msg_signup) {
+            toast.error("please signup");
+            setTimeout(() => {
+              navigate("/auth/signup");
+            }, 3000);
+          } else if (res.msgerr) {
+            toast.error("please try again later");
+          } else {
+            dispatch(SetProductArray(res.products));
+          }
+        } catch (error) {
+          console.log(error);
           toast.error("please try again later");
-        } else {
-          dispatch(SetProductArray(res.products));
         }
-      } catch (error) {
-        console.log(error);
-        toast.error("please try again later");
-      }
-    });
-    BuyerCartFetchItem(token).then((res) => {
-      try {
-        if (res.msg_login) {
-          toast.error("please login");
-          setTimeout(() => {
-            navigate("/auth/login");
-          }, 3000);
-        } else if (res.msg_signup) {
-          toast.error("please signup");
-          setTimeout(() => {
-            navigate("/auth/signup");
-          }, 3000);
-        } else if (res.msg_succes) {
-          dispatch(SetCartArray(res.item));
-          // setTimeout(() => {
-          //   navigate("/buyer/cart");
-          // }, 3000);
-        } else {
-          toast.error("try again later");
+      });
+      BuyerCartFetchItem(token).then((res) => {
+        try {
+          if (res.msg_login) {
+            toast.error("please login");
+            setTimeout(() => {
+              navigate("/auth/login");
+            }, 3000);
+          } else if (res.msg_signup) {
+            toast.error("please signup");
+            setTimeout(() => {
+              navigate("/auth/signup");
+            }, 3000);
+          } else if (res.msg_succes) {
+            dispatch(SetCartArray(res.item));
+            // setTimeout(() => {
+            //   navigate("/buyer/cart");
+            // }, 3000);
+          } else {
+            toast.error("try again later");
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
-    });
+      });
+    } else {
+      BuyerFetchItemAuth().then((res) => {
+        dispatch(SetProductArray(res.products));
+      });
+    }
   }, []);
   return (
     <>

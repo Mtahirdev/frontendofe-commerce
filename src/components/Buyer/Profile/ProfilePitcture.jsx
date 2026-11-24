@@ -3,7 +3,6 @@ import { FaCameraRotate } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, useNavigate } from "react-router-dom";
 import { SetProfilePitcture } from "../../../server/server.js";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { setUserData } from "../../../store/feature/UserData";
@@ -63,7 +62,6 @@ const ProfilePitcture = () => {
         </div>
       )}
 
-      <ToastContainer autoClose={3000} />
 
       <Form onSubmit={SubmitFun} className="w-[90%] lg:w-[70%] mx-auto">
         <div className="flex flex-col items-center gap-6 rounded-2xl bg-white border border-ink-200 shadow-sm p-6 text-center sm:flex-row sm:text-left sm:gap-10">

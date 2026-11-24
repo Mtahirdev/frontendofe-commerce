@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../../components/Seller/Navbar/Navbar.jsx";
 import ProfileHeading from "../../components/Seller/Profile/ProfileHeading.jsx";
@@ -10,7 +9,6 @@ import ProfileInformation from "../../components/Seller/Profile/ProfileInformati
 const ProfilePageSeller = () => {
   return (
     <div className="flex flex-col lg:flex-row lg:justify-center bg-ink-100 min-h-screen text-ink-800">
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="w-full lg:w-[30%] desk:w-[22%]">
         <Navbar />

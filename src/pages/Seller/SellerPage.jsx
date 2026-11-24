@@ -1,16 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import Navbar from "../../components/Seller/Navbar/Navbar.jsx";
 import SearchBar from "../../components/Seller/Products/SearchBar.jsx";
 import ProductGrid from "../../components/Seller/Products/ProductGrid.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { socket } from "../../utils/utils.js";
+import {
+  pushNotificationData,
+  setNotificationData,
+  setOrderData,
+} from "../../store/feature/UserData.js";
 
 const SellerPage = () => {
+  // let { user, verified, type } = useSelector((state) => state.userstore);
+  // let dispatch = useDispatch();
+
+  // if (verified && type !== "auth") {
+  //   useEffect(() => {
+  //     socket.io.opts.query = {
+  //       userId: user._id,
+  //     };
+
+  //     socket.connect();
+
+  //     socket.on("getOnlineUsers", (data) => {
+  //       console.log(data);
+  //     });
+
+  //     socket.on("notification", (data) => {
+  //       console.log(data);
+  //       dispatch(pushNotificationData(data.notification));
+  //       dispatch(setOrderData(data.order));
+  //       toast.success(data.notification.text);
+  //     });
+
+  //     return () => socket.close();
+  //   }, []);
+  // }
   return (
     <div className="flex flex-col lg:flex-row lg:justify-center bg-ink-100 min-h-screen text-ink-800">
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="w-full lg:w-[30%] desk:w-[22%]">
         <Navbar />

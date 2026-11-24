@@ -32,6 +32,7 @@ import NotificationBuyerPage from "./pages/Buyer/NotificationBuyerPage.jsx";
 import ProductDetailPageBuyer from "./pages/Buyer/ProductDetailPageBuyer.jsx";
 import BuyerOrderPage from "./pages/Buyer/BuyerOrderPage.jsx";
 import ProfilePageSeller from "./pages/Seller/ProfilePageSeller.jsx";
+import VerifiedPage from "./pages/Auth/VerifiedPage.jsx";
 let route = createBrowserRouter([
   {
     path: "/",
@@ -46,11 +47,14 @@ let route = createBrowserRouter([
         path: "/auth",
         element: <App />,
         children: [
-          { index: true, element: <Homepage /> },
+          { index: true, element: <Navigate to="/auth/home" replace /> },
+          { path: "home", element: <Homepage /> },
           { path: "login", element: <LoginPage /> },
           { path: "signup", element: <Signuppage /> },
           { path: "otp", element: <OtpPage /> },
           { path: "type", element: <Typepage /> },
+          { path: "verfiyaccount", element: <VerifiedPage /> },
+          { path: "productdetail/:id", element: <ProductDetailPageBuyer /> },
         ],
       },
 

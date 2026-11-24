@@ -6,6 +6,8 @@ import SecondFooter from "../../components/Buyer/SecondFooter";
 import Footer from "../../components/Buyer/Footer";
 import Cart from "../../components/Buyer/Cart components/Cart.jsx";
 import SideBar from "../../components/Buyer/Navbar components/SideBar.jsx";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const Cartpage = () => {
   return (

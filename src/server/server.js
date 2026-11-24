@@ -315,3 +315,24 @@ export let FetchSellerOrder = async (token) => {
 
   return res;
 };
+
+export const Delete_Address = async (data, token) => {
+  const res = await apiFetch(`${BASE_URL}/buyer/deleteaddress`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+};
+
+export let BuyerFetchItemAuth = async () => {
+  let res = await apiFetch(`http://localhost:3000/buyer/itemauth`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  return res;
+};

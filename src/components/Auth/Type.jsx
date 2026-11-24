@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { FaStore, FaShoppingBag } from "react-icons/fa";
 import TypeBanner from "../../assets/typebanner.avif";
 import { TypeFetch } from "../../server/server";
@@ -84,7 +84,6 @@ const Type = () => {
           <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div
         style={{ backgroundImage: `url(${TypeBanner})` }}

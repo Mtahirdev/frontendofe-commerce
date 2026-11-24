@@ -1,11 +1,19 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
+import VerifiedPage from "../../pages/Auth/VerifiedPage.jsx";
 
 const ProtectionLayout = ({ children }) => {
   let { type, token, verified } = useSelector((state) => state.userstore);
   let navigate = useNavigate();
   if (type == "auth") return <Navigate to="/auth/login" replace />;
+
+  if (verified == false)
+    return (
+      <div>
+        <VerifiedPage></VerifiedPage>
+      </div>
+    );
 
   return <div>{children}</div>;
 };

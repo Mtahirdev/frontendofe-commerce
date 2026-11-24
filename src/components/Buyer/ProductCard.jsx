@@ -3,8 +3,7 @@ import { CiStar } from "react-icons/ci";
 import { FaRegStar } from "react-icons/fa";
 import { AddtoCartFetch, BuyerCartFetchItem } from "../../server/server";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { SetCartArray } from "../../store/feature/ProductsData";
@@ -12,7 +11,7 @@ const ProductCard = ({ product }) => {
   let lessprice = product.price - product.price * (product.discount / 100);
   lessprice = Math.round(lessprice);
   console.log(lessprice);
-  let { token } = useSelector((state) => state.userstore);
+  let { token, verified, type } = useSelector((state) => state.userstore);
   let dispatch = useDispatch();
   let navigate = useNavigate();
   let AddtoCart = async (id) => {
@@ -65,10 +64,13 @@ const ProductCard = ({ product }) => {
       toast.error("try again later");
     }
   };
+  const { pathname } = useLocation();
+
+  const detailPath = pathname.startsWith("/buyer") ? "/buyer" : "/auth";
   return (
     <div className="w-full h-fit  flex flex-col justify-center items-center">
       <div className="w-full max-w-70 overflow-hidden rounded-2xl bg-white border border-pink-200 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-brand-200">
-        <Link to={`productdetail/${product._id}`}>
+        <Link to={`/${type}/productdetail/${product._id}`}>
           <div className="relative h-64 w-full overflow-hidden bg-ink-100">
             <img
               src={product.mainimg}

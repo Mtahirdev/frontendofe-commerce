@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Form, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { OtpFetch, RequestOtpFetch } from "../../server/server.js";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setToken,
+  setType,
+  setUserData,
+  setVerified,
+} from "../../store/feature/UserData.js";
 
 const LENGTH = 4;
 
@@ -14,6 +20,8 @@ const Otpcomponent = () => {
   const navigate = useNavigate();
   const refs = useRef([]);
   const timerRef = useRef(null);
+  let { token, type, verified } = useSelector((state) => state.userstore);
+  let dispatch = useDispatch();
 
   const startCountdown = (seconds) => {
     clearInterval(timerRef.current);
@@ -66,7 +74,6 @@ const Otpcomponent = () => {
       toast.error(`please wait ${countdown}sec`);
       return;
     }
-    startCountdown(60);
     setloading(true);
     try {
       const res = await RequestOtpFetch();
@@ -82,6 +89,7 @@ const Otpcomponent = () => {
       } else if (res.msg_success) {
         setloading(false);
         toast.success(res.msg_success);
+        startCountdown(60);
       } else {
         setloading(false);
         toast.error("please try again later");
@@ -129,7 +137,17 @@ const Otpcomponent = () => {
       } else if (res.msg_success) {
         setloading(false);
         toast.success(res.msg_success);
-        setTimeout(() => navigate("/auth/type"), 1500);
+        dispatch(setToken(res.data.accesstoken));
+        dispatch(setType(res.data.type));
+        dispatch(setVerified(res.data.verified));
+        dispatch(setUserData(res.data.user));
+        console.log(res.data.type);
+
+        if (res.data.type == "auth") {
+          setTimeout(() => navigate("/auth/type"), 1500);
+        } else {
+          setTimeout(() => navigate(`/${res.data.type}`), 1500);
+        }
       } else {
         setloading(false);
         toast.error("please try again later");
@@ -148,7 +166,6 @@ const Otpcomponent = () => {
           <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="flex min-h-screen w-full items-center justify-center bg-ink-50 px-4">
         <div className="w-full max-w-sm rounded-2xl border border-ink-200 bg-white p-6 text-center shadow-sm sm:p-8">

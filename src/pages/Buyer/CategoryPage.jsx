@@ -5,6 +5,10 @@ import SecondFooter from "../../components/Buyer/SecondFooter";
 import Footer from "../../components/Buyer/Footer";
 import CategoryMain from "../../components/Buyer/Category/CategoryMain.jsx";
 import SideBar from "../../components/Buyer/Navbar components/SideBar.jsx";
+import InsideBrand from "../../components/Buyer/InsideBrand.jsx";
+import Trending from "../../components/Buyer/Trending.jsx";
+import Phone from "../../components/Buyer/Phone.jsx";
+import ProductGridOne from "../../components/Buyer/ProductGridOne.jsx";
 
 const CategoryPage = () => {
   return (
@@ -18,6 +22,7 @@ const CategoryPage = () => {
 
             <div className="pt-20 pb-20 md:pt-24 md:pb-5">
               <CategoryMain></CategoryMain>
+
               <SecondFooter></SecondFooter>
               <Footer></Footer>
             </div>

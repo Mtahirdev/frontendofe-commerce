@@ -7,6 +7,7 @@ import {
   FaBoxOpen,
   FaCheck,
 } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 
 const notifications = [
   {
@@ -62,6 +63,7 @@ const notifications = [
 ];
 
 let Notifications = () => {
+  let { notification } = useSelector((state) => state.userstore);
   return (
     <div className="min-h-screen  p-4 sm:p-6 lg:p-8">
       {/* Header */}
@@ -84,19 +86,19 @@ let Notifications = () => {
 
       {/* Notification List */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        {notifications.map((notification) => {
-          const Icon = notification.icon;
+        {notification.map((notification) => {
+          const Icon = notifications[0].icon;
 
           return (
             <div
-              key={notification.id}
+              key={notification._id}
               className={`flex gap-4 border-b border-slate-100 p-4 transition hover:bg-slate-50 sm:p-5 ${
-                notification.unread ? "bg-orange-50/40" : ""
+                notification.seen ? "bg-orange-50/40" : ""
               }`}
             >
               {/* Icon */}
               <div
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${notification.iconBg}`}
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${notifications[0].iconBg}`}
               >
                 <Icon />
               </div>
@@ -106,26 +108,26 @@ let Notifications = () => {
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <h3
                     className={`text-sm sm:text-base ${
-                      notification.unread
+                      notification.seen
                         ? "font-bold text-[#0B1730]"
                         : "font-semibold text-slate-700"
                     }`}
                   >
-                    {notification.title}
+                    {notification.text}
                   </h3>
 
                   <span className="shrink-0 text-xs text-slate-400">
-                    {notification.time}
+                    {/* {notification.time} */}
                   </span>
                 </div>
 
                 <p className="mt-1 text-sm leading-5 text-slate-500">
-                  {notification.message}
+                  {notification.text}
                 </p>
               </div>
 
               {/* Unread indicator */}
-              {notification.unread && (
+              {notification.seen && (
                 <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#FF5A36]" />
               )}
             </div>

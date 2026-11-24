@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
@@ -67,7 +67,6 @@ const AuthLayout = ({ title, subtitle, loading, children }) => {
           <div className="w-12 h-12 rounded-full border-4 border-white/30 border-t-brand-500 animate-spin"></div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="min-h-screen bg-ink-50 sm:flex">
         {/* image */}

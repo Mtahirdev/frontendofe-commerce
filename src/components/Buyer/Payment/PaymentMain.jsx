@@ -87,6 +87,7 @@ const PaymentMain = () => {
       toast.error("please try again later");
     }
   };
+  console.log(cartarr);
 
   if (cartarr.length === 0) {
     return (

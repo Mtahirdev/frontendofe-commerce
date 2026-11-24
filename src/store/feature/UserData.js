@@ -7,6 +7,7 @@ let UserData = createSlice({
     verified: false,
     user: [],
     order: [],
+    notification: [],
   },
   name: "userdata",
   reducers: {
@@ -28,12 +29,24 @@ let UserData = createSlice({
     },
     setOrderData: (state, action) => {
       state.order = action.payload;
-      console.log(state.user);
+    },
+    setNotificationData: (state, action) => {
+      state.notification = action.payload;
+    },
+    pushNotificationData: (state, action) => {
+      state.notification.push(action.payload);
     },
   },
 });
 
 export default UserData.reducer;
 
-export let { setToken, setType, setVerified, setUserData, setOrderData } =
-  UserData.actions;
+export let {
+  setToken,
+  setType,
+  setVerified,
+  setUserData,
+  setOrderData,
+  setNotificationData,
+  pushNotificationData,
+} = UserData.actions;

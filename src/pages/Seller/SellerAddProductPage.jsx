@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoIosArrowBack } from "react-icons/io";
 import Navbar from "../../components/Seller/Navbar/Navbar";
@@ -9,7 +8,6 @@ import AddProductForm from "../../components/Seller/AddProductForm/AddProductFor
 const SellerAddProductPage = () => {
   return (
     <div className="flex flex-col lg:flex-row lg:justify-center bg-ink-100 min-h-screen text-ink-800">
-      <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="w-full lg:w-[30%] desk:w-[22%]">
         <Navbar />

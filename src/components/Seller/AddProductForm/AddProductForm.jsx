@@ -15,8 +15,14 @@ const AddProductForm = () => {
   const SubmitFun = async (e) => {
     e.preventDefault();
     setloading(true);
+    const formdata = new FormData(e.target);
+    let data = Object.fromEntries(new FormData(e.target));
+    console.log(data);
+    console.log(formdata.getAll("itemimg"));
+
+    console.log(formdata);
+
     try {
-      const formdata = new FormData(e.target);
       const res = await AddItem(formdata, token);
 
       if (res.msg_login) {
@@ -60,7 +66,7 @@ const AddProductForm = () => {
       <div className="w-full flex justify-center">
         <Form
           onSubmit={SubmitFun}
-          className="w-[90%] mb-10 rounded-2xl border border-ink-200 bg-white p-5 shadow-sm sm:p-6"
+          className="w-full md:w-[90%] mb-10 rounded-2xl border border-ink-200 bg-white p-5 shadow-sm sm:p-6"
         >
           <ProductFields />
 

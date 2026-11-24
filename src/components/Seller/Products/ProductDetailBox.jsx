@@ -5,6 +5,30 @@ import { toast } from "react-toastify";
 import { DeleteItemServer, FetchItem } from "../../../server/server";
 import { SetProductArray } from "../../../store/feature/ProductsData";
 
+// same names as the form's color list (custom colors are saved as "#hex")
+const COLOR_HEX = {
+  Black: "#111827",
+  White: "#ffffff",
+  Gray: "#9ca3af",
+  Red: "#ef4444",
+  Orange: "#f97316",
+  Yellow: "#facc15",
+  Green: "#10b981",
+  Blue: "#3b82f6",
+  Navy: "#1e3a8a",
+  Purple: "#8b5cf6",
+  Pink: "#ec4899",
+  Brown: "#92400e",
+};
+
+const splitList = (v) =>
+  Array.isArray(v)
+    ? v.filter(Boolean)
+    : String(v || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
 const ProductDetailBox = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,6 +36,7 @@ const ProductDetailBox = () => {
   const { token } = useSelector((state) => state.userstore);
   const { productarr } = useSelector((state) => state.productstore);
   const [loading, setloading] = useState(false);
+  const [active, setActive] = useState(0);
 
   const product = productarr?.find((ele) => ele._id == id);
 
@@ -73,6 +98,17 @@ const ProductDetailBox = () => {
     );
   }
 
+  /* ---------- derived data ---------- */
+  const images = product.arrofimg?.length
+    ? product.arrofimg
+    : product.mainimg
+      ? [product.mainimg]
+      : [];
+  const mainSrc = images[active] || images[0];
+
+  const categories = splitList(product.category);
+  const colors = splitList(product.color);
+
   const lessprice = Math.round(
     product.price - product.price * (product.discount / 100),
   );
@@ -87,8 +123,6 @@ const ProductDetailBox = () => {
     stock <= 0 ? "Out of stock" : stock <= 5 ? "Low stock" : "In stock";
 
   const details = [
-    { label: "Category", value: product.category },
-    { label: "Color", value: product.color },
     { label: "Size", value: product.size },
     { label: "Unit", value: product.unit },
     { label: "Stock", value: product.stock },
@@ -104,32 +138,63 @@ const ProductDetailBox = () => {
       )}
 
       <div className="w-[95%] overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-sm">
-        <div className="grid grid-cols-1 gap-6 p-4 sm:p-5 md:grid-cols-[280px_1fr] md:p-6 lg:grid-cols-[320px_1fr]">
-          {/* image */}
-          <div className="w-full">
+        <div className="grid grid-cols-1 gap-6 p-4 sm:p-5 md:grid-cols-[320px_1fr] md:p-6 lg:grid-cols-[420px_1fr]">
+          {/* ---------- gallery ---------- */}
+          <div className="flex w-full flex-col gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-ink-100 p-4">
-              <img
-                src={product.mainimg}
-                alt={product.productName}
-                className="h-full w-full object-contain"
-              />
+              {mainSrc && (
+                <img
+                  src={mainSrc}
+                  alt={product.productName}
+                  className="h-full w-full object-contain"
+                />
+              )}
               {product.discount > 0 && (
                 <span className="absolute left-3 top-3 rounded-md bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">
                   -{product.discount}%
                 </span>
               )}
+              {images.length > 1 && (
+                <span className="absolute bottom-3 right-3 rounded-full bg-ink-900/70 px-2.5 py-1 text-xs font-medium text-white">
+                  {active + 1} / {images.length}
+                </span>
+              )}
             </div>
+
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {images.map((src, i) => (
+                  <button
+                    type="button"
+                    key={src + i}
+                    onClick={() => setActive(i)}
+                    aria-label={`Show image ${i + 1}`}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 bg-ink-100 transition ${
+                      active === i
+                        ? "border-brand-500"
+                        : "border-ink-200 hover:border-brand-300"
+                    }`}
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* info */}
-          <div className="flex flex-col">
+          {/* ---------- info ---------- */}
+          <div className="flex min-w-0 flex-col">
             <div className="border-b border-ink-200 pb-4">
               {product.brand && (
                 <p className="text-sm font-medium text-brand-600">
                   {product.brand}
                 </p>
               )}
-              <h2 className="mt-1 text-xl font-bold text-ink-800 sm:text-2xl lg:text-3xl">
+              <h2 className="mt-1 break-words text-xl font-bold text-ink-800 sm:text-2xl lg:text-3xl">
                 {product.productName}
               </h2>
               <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -143,7 +208,72 @@ const ProductDetailBox = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 py-5 sm:grid-cols-3">
+            {/* price */}
+            <div className="flex flex-wrap items-center gap-3 border-b border-ink-200 py-5">
+              <span className="text-3xl font-bold text-ink-800">
+                Rs {lessprice}
+              </span>
+              {product.discount > 0 && (
+                <>
+                  <span className="text-base text-ink-400 line-through">
+                    Rs {product.price}
+                  </span>
+                  <span className="rounded-md bg-accent-50 px-2 py-1 text-xs font-semibold text-accent-600">
+                    {product.discount}% OFF
+                  </span>
+                </>
+              )}
+              <span
+                className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${stockTone}`}
+              >
+                {stockText}
+              </span>
+            </div>
+
+            {/* category + colors */}
+            <div className="flex flex-col gap-4 border-b border-ink-200 py-5">
+              <div>
+                <p className="text-xs font-medium text-ink-500">Category</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {categories.map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {colors.length > 0 && (
+                <div>
+                  <p className="text-xs font-medium text-ink-500">Colors</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {colors.map((c) => {
+                      const hex = c.startsWith("#") ? c : COLOR_HEX[c];
+                      return (
+                        <span
+                          key={c}
+                          className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white py-1 pl-1.5 pr-3 text-sm text-ink-700"
+                        >
+                          {hex && (
+                            <span
+                              className="h-5 w-5 rounded-full border border-ink-200"
+                              style={{ backgroundColor: hex }}
+                            />
+                          )}
+                          {c}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* other details */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 border-b border-ink-200 py-5 sm:grid-cols-4">
               {details.map((d) => (
                 <div key={d.label}>
                   <p className="text-xs font-medium text-ink-500">{d.label}</p>
@@ -152,26 +282,9 @@ const ProductDetailBox = () => {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 border-b border-ink-200 pb-5">
-              <span className="text-3xl font-bold text-ink-800">
-                Rs {lessprice}
-              </span>
-              <span className="text-base text-ink-400 line-through">
-                Rs {product.price}
-              </span>
-              <span className="rounded-md bg-accent-50 px-2 py-1 text-xs font-semibold text-accent-600">
-                {product.discount}% OFF
-              </span>
-              <span
-                className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${stockTone}`}
-              >
-                {stockText}
-              </span>
-            </div>
-
             <div className="py-5">
               <h3 className="text-base font-bold text-ink-800">Description</h3>
-              <p className="mt-2 text-sm leading-6 text-ink-500 sm:text-base">
+              <p className="mt-2 whitespace-pre-line break-words text-sm leading-6 text-ink-500 sm:text-base">
                 {product.description}
               </p>
             </div>

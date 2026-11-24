@@ -7,33 +7,35 @@ import { BuyerCartFetchItem } from "../../../server/server.js";
 import { useDispatch, useSelector } from "react-redux";
 import { SetCartArray } from "../../../store/feature/ProductsData.js";
 const Cartupper = () => {
-  let { token } = useSelector((state) => state.userstore);
+  let { token, verified } = useSelector((state) => state.userstore);
   let { cartarr } = useSelector((state) => state.productstore);
   let dispatch = useDispatch();
   let navigate = useNavigate();
   useEffect(() => {
-    BuyerCartFetchItem(token).then((res) => {
-      try {
-        if (res.msg_login) {
-          toast.error("please login");
-          setTimeout(() => {
-            navigate("/auth/login");
-          }, 3000);
-        } else if (res.msg_signup) {
-          toast.error("please signup");
-          setTimeout(() => {
-            navigate("/auth/signup");
-          }, 3000);
-        } else if (res.msg_succes) {
-          dispatch(SetCartArray(res.item));
-        } else {
+    if (verified) {
+      BuyerCartFetchItem(token).then((res) => {
+        try {
+          if (res.msg_login) {
+            toast.error("please login");
+            setTimeout(() => {
+              navigate("/auth/login");
+            }, 3000);
+          } else if (res.msg_signup) {
+            toast.error("please signup");
+            setTimeout(() => {
+              navigate("/auth/signup");
+            }, 3000);
+          } else if (res.msg_succes) {
+            dispatch(SetCartArray(res.item));
+          } else {
+            toast.error("try again later");
+          }
+        } catch (error) {
+          console.log(error);
           toast.error("try again later");
         }
-      } catch (error) {
-        console.log(error);
-        toast.error("try again later");
-      }
-    });
+      });
+    }
   }, []);
   return (
     <div className="w-full mx-auto">

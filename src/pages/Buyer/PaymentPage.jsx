@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Upper_Navbar from "../../components/Buyer/Navbar components/Upper_Navbar";
 import Navbar from "../../components/Buyer/Navbar components/Navbar";
@@ -11,7 +10,6 @@ import SideBar from "../../components/Buyer/Navbar components/SideBar.jsx";
 const PaymentPage = () => {
   return (
     <div className="overflow-x-hidden bg-ink-50 min-h-screen text-ink-800">
-      <ToastContainer position="top-right" autoClose={3000} />
       <Upper_Navbar />
       <Navbar />
       <SideBar />
