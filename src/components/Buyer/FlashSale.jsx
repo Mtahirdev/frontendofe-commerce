@@ -214,10 +214,10 @@ const FlashSale = ({
               768: { slidesPerView: 2, spaceBetween: 16 },
               1024: { slidesPerView: 3, spaceBetween: 20 },
             }}
-            className="!pb-1"
+            className="pb-1!"
           >
             {deals.map((p) => (
-              <SwiperSlide key={p._id} className="!h-auto">
+              <SwiperSlide key={p._id} className="h-auto!">
                 <DealCard product={p} basePath={basePath} />
               </SwiperSlide>
             ))}
