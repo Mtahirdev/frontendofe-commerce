@@ -112,6 +112,7 @@ const Otpcomponent = () => {
     setloading(true);
     try {
       const res = await OtpFetch({ otp: code });
+      console.log(res);
 
       if (res.msg_login) {
         setloading(false);
